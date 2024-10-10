@@ -1,8 +1,23 @@
-# ML
+# Podatkovno rudarjenje in strojno učenje
+
+Zaradi neskončne količine podatkov, je pomembno podatkovno rudarjenje.
+Ponavadi vseh podatkov ne uporabimo za analize, zato je pomembno, da
+se podatki sproti evaluirajo.
 
 Razlika med strojnim učenjem in ne-strojnim učenjem je v tem, kdo dela delo.
 Če ti odločaš in ugotavljaš glede na podatke od računalnika, to je machine learning.
 Če dela namesto tebe nekdo odločitve, je to AI.
+
+Najbolj pogoste tehnike ML:
+
+- Klasifikacija/napovedovanje razreda primerov
+- Regresija/ocenjevanje vrednosti
+- Razvrščanje v skupine (clustering)/iskanje skupin v podatkih
+- Asociacije
+- Vizualizacija/lažje odkrivanje zakonitosti
+- Povzemanje/opisovanje skupin podatkov
+- Odkrivanje odstopanj/iskanje znakov sprememb
+- Analiza povezav/relacij med podatki
 
 ## Supervised learning
 
@@ -13,8 +28,7 @@ model sploh dela.
 
 ### Klasifikacija
 
-Modeli z omejenimi možnimi odgovori.
-Vračajo **classes** oziroma **razrede**, **tipe**.
+Modeli z omejenimi možnimi odgovori. Model napove razred primera.
 
 >Npr. prepoznavanje psov in mačk.
 >Tak model lahko vrne 2 vrednosti - mačka ali pes.
