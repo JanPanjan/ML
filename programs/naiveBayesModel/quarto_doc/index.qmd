@@ -1,0 +1,288 @@
+---
+author: "Jan Panjan"
+title: "Implementacija Naive Bayes algoritma"
+subtitle: "Strojno učenje in podatkovno rudarjenje"
+format:
+  html:
+    theme: flatly
+    toc: true
+---
+
+# Kaj so Naive Bayes algoritmi
+
+To je družina algoritmov zasnovanih na podlagi Bayesovega teorema. *Naive*, ker
+ima preveč splošen pogled na podatke. Sklepa, da so spremenljivke med seboj
+neodvisne. Kljub temu so veliko uporabljeni zaradi njihove preproste
+implementacije in uporabnosti v svetu strojnega učenja.
+
+Uporablja se pri problemih, ki zahtevjao klasifikacijo. Model predicta 
+verjetnost, da podatek pripada nekemu razredu glede na podane podatke.
+Uporabili bomo weather dataset, ki opisuje vremenske razmere ter ali je v redu,
+da igramo golf v teh razmerah.
+
+```{r} 
+#| code-fold: true
+#| warning: false
+library(tidyverse)
+df <- head(read.table("weather.txt"), 3) %>% {names(.) <- c("weather", "temperature", "humidity", "windy"); .}
+knitr::kable(df)
+
+```
+
+<br>
+
+Data frame je sestavljen iz dveh delov - **feature matrix** in **response
+vector**:
+
+1. **Feature matrix** vsebuje vse vrstice, v katerih so vrednosti, ki jih bo
+model analiziral.
+2. **Response vector** vsebuje class spremenljivke (to kar mora model predictat)
+za vsako vrstico podatkovnega okvirja.
+
+# Main class
+
+To je vstopna točka programa. Tu hranimo data frame in kličemo funkcijo
+**train**, ki bo *natrenirala* naš model.
+
+```{.java filename="Main.java"} 
+public class Main {
+    public static void main(String[] args) {
+        String[][] data = {
+                {"Sunny", "Hot", "High", "False", "No"},
+                {"Sunny", "Hot", "High", "True", "No"},
+                {"Overcast", "Hot", "High", "False", "Yes"},
+                {"Rainy", "Mild", "High", "False", "Yes"},
+                {"Rainy", "Cool", "Normal", "False", "Yes"},
+                {"Rainy", "Cool", "Normal", "True", "No"},
+                {"Overcast", "Cool", "Normal", "True", "Yes"},
+                {"Sunny", "Mild", "High", "False", "No"},
+                {"Sunny", "Cool", "Normal", "False", "Yes"},
+                {"Rainy", "Mild", "Normal", "False", "Yes"},
+                {"Sunny", "Mild", "Normal", "True", "Yes"},
+                {"Overcast", "Mild", "High", "True", "Yes"},
+                {"Overcast", "Hot", "Normal", "False", "Yes"},
+                {"Rainy", "Mild", "High", "True", "No"}
+        };
+
+        String[][] X = Util.removeColumn(data, 4);
+        String[] Y = Util.extractColumn(data, 4);
+
+        NaiveBayes nb = new NaiveBayes();
+        nb.train(X, Y);
+        nb.display();
+    }
+}
+```
+
+2D polje **data** hrani naše podatke. Zadnji stolpec je **class** stolpec z
+vrednostmi yes in no.
+
+```{java} 
+String[][] data = {
+{"Sunny", "Hot", "High", "False", "No"},
+{"Sunny", "Hot", "High", "True", "No"},
+{"Overcast", "Hot", "High", "False", "Yes"},
+{"Rainy", "Mild", "High", "False", "Yes"},
+{"Rainy", "Cool", "Normal", "False", "Yes"},
+{"Rainy", "Cool", "Normal", "True", "No"},
+{"Overcast", "Cool", "Normal", "True", "Yes"},
+{"Sunny", "Mild", "High", "False", "No"},
+{"Sunny", "Cool", "Normal", "False", "Yes"},
+{"Rainy", "Mild", "Normal", "False", "Yes"},
+{"Sunny", "Mild", "Normal", "True", "Yes"},
+{"Overcast", "Mild", "High", "True", "Yes"},
+{"Overcast", "Hot", "Normal", "False", "Yes"},
+{"Rainy", "Mild", "High", "True", "No"}
+};
+```
+
+Data razdeli v **X** in **Y** polji. X so features in Y so class labels.
+To naredita funkciji **removeColumn** in **extractColumn**, del **Util.java**
+razreda.
+
+```{java} 
+String[][] X = Util.removeColumn(data, 4);
+String[] Y = Util.extractColumn(data, 4);
+}
+```
+
+NaiveBayes model je ustvarjen kot **nb** in trained s funkcijo **train**.
+Rezultati so predstavljeni s **display** funkcijo. Obe sta del `NaiveBayes.java`
+razreda.
+
+```{java} 
+NaiveBayes nb = new NaiveBayes();
+nb.train(X, Y);
+nb.display();
+}
+```
+
+# Util class
+
+Razred vsebuje *utility* funkcije za preprocessing naših podatkov, kar je
+zelo pomembno za Naive Bayes model.
+
+```{.java filename="Util.java"} 
+import java.util.ArrayList;
+
+class Util {
+    public static String[][] removeColumn(String[][] data, int colToRemove) {...}
+    public static String[] extractColumn(String[][] data, int colToExtract) {...}
+    public static ArrayList<String> unique(String[] columns) {...}
+}
+```
+
+## removeColumn
+
+Funkcija odstrani zadnji column (class spremenljivka) iz dataseta.
+Kot argumenta vzame 2D polje **data** in int vrednost **colToRemove**. V
+našem je to četrti column, zato da lahko v ostane le **feature matrix**.
+
+```{.java filename="Util.java"} 
+public static String[][] removeColumn(String[][] data, int colToRemove) {
+    int numOfRows = data.length;
+    int numOfCols = data[0].length - 1;
+    String[][] newData = new String[numOfRows][numOfCols];
+
+    for (int row = 0; row < numOfRows; row++) {
+        ArrayList<String> newRow = new ArrayList<>();
+        for (int col = 0; col < numOfCols; col++) {
+            if (col != colToRemove) {
+                newRow.add(data[row][col]);
+            }
+        }
+        String[] newRowArray = newRow.toArray(new String[0]);
+        newData[row] = newRowArray;
+    }
+    return newData;
+}
+```
+
+### Potek funkcije
+
+Začne s tem, da najde število vrstic in stolpcev. Število vrstic predstavlja
+**data.length**, število stolpcev, ki jih želimo ohranit pa je **data\[0].length - 1**.
+
+S temi podatki ustvarimo inicializiramo novo polje, ki ga bomo zafilali s pravimi
+podatki in vrnili.
+
+```{java} 
+int numOfRows = data.length;
+int numOfCols = data[0].length - 1;
+String[][] newData = new String[numOfRows][numOfCols];
+```
+
+Z dvema for loopoma gremo čez vrstice in stolpce. Vsako novo iteracijo vrstice
+ustvarimo **ArrayList<String> newRow**, ki omogoča dinamično alokacijo spomina.
+
+```{java} 
+for (int row = 0; row < numOfRows; row++) {
+    ArrayList<String> newRow = new ArrayList<>();
+    for (int col = 0; col < numOfCols; col++) {
+        // ...
+    }
+}
+
+```
+
+Ko gre čez stolpce, if stavek preskoči **colToRemove** oziroma zadnji stolpec naših
+podatkov. Vse ostale doda v polje s funkcijo **add**.
+
+```{java} 
+if (col != colToRemove) {
+    newRow.add(data[row][col]);
+}
+```
+
+ArrayList pretvorimo nazaj v normalen Array tipa string, Funkciji **toArray** 
+pošljemo argument **new String\[0]** kot template za novo polje. Če je velikost 
+podanega polja manj, kot polje na katerem kličemo funkcijo (newRow), potem 
+funkcija ustvari novo polje istega tipa s pravo velikostjo in vrne to polje.
+
+```{java} 
+String[] newArray = newRow.toArray(new String[0]);
+```
+Na koncu shranimo v **newData\[row]** (element v polju za trenutno iteracijo) novo
+polje in vrnemo nove podatke.
+
+```{java} 
+newData[row] = newArray;
+return newData
+
+```
+
+## extractColumn
+
+Funkcija extracta en column iz podatkov in ga vrne kot 1D polje. Uporabimo jo, da
+dobimo response vector iz podatkov. Sprejme 2D polje **data** in int **colToExtract**
+(v našem primeru zadnji class column).
+
+```{.java filename="Util.java"} 
+public static String[] extractColumn(String[][] data, int colToExtract) {
+    String[] column = new String[data.length];
+    for (int row = 0; row < data.length; row++) {
+        column[row] = data[row][colToExtract];
+    }
+    return column;
+}
+```
+
+### Potek funkcije
+
+Začnemo s tem, da ustvarimo novo polje dolžine data, ki bo hranilo vrednosti
+class stolpca.
+
+```{java} 
+String[] column = new String[data.length];
+}
+```
+
+Nato loopamo čez vrstice podatkov in v novi **column** array shranimo le tisti
+element iz podatkov, ki ga želimo.
+
+```{java} 
+    for (int row = 0; row < data.length; row++) {
+        column[row] = data[row][colToExtract];
+    }
+    return column;
+}
+```
+
+## unique
+
+Funkcija vzame 1D polje **columns** in vrne ArrayList unikatnih vrednosti. Uporabimo jo, da
+najdemo različne vrednosti v feature matriki in response vektorju.
+
+```{.java filename="Util.java"} 
+public static ArrayList<String> unique(String[] columns) {
+    ArrayList<String> uniqueValues = new ArrayList<>();
+    for (String value : columns) {
+        if (!uniqueValues.contains(value)) {
+            uniqueValues.add(value);
+        }
+    }
+    return uniqueValues;
+}
+```
+
+### potek funkcije
+
+Ustvarimo ArrayList, ki bo nosil vrednosti.
+
+```{java} 
+ArrayList<String> uniqueValues = new ArrayList<>();
+}
+```
+
+Gremo čez vrednosti v polju in jih dajemo v novo polje. Ko naletimo na vrednost,
+ki je že v polju, jo preskočimo. Vrnemo polje.
+
+```{java} 
+for (String value : columns) {
+    if (!uniqueValues.contains(value)) {
+        uniqueValues.add(value);
+    }
+}
+return uniqueValues;
+}
+```

@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.553">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Jan Panjan">
+
+<title>Implementacija Naive Bayes algoritma</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="index_files/libs/clipboard/clipboard.min.js"></script>
+<script src="index_files/libs/quarto-html/quarto.js"></script>
+<script src="index_files/libs/quarto-html/popper.min.js"></script>
+<script src="index_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="index_files/libs/quarto-html/anchor.min.js"></script>
+<link href="index_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="index_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="index_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="index_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="index_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#kaj-so-naive-bayes-algoritmi" id="toc-kaj-so-naive-bayes-algoritmi" class="nav-link active" data-scroll-target="#kaj-so-naive-bayes-algoritmi">Kaj so Naive Bayes algoritmi</a></li>
+  <li><a href="#main-class" id="toc-main-class" class="nav-link" data-scroll-target="#main-class">Main class</a></li>
+  <li><a href="#util-class" id="toc-util-class" class="nav-link" data-scroll-target="#util-class">Util class</a>
+  <ul class="collapse">
+  <li><a href="#removecolumn" id="toc-removecolumn" class="nav-link" data-scroll-target="#removecolumn">removeColumn</a>
+  <ul class="collapse">
+  <li><a href="#potek-funkcije" id="toc-potek-funkcije" class="nav-link" data-scroll-target="#potek-funkcije">Potek funkcije</a></li>
+  </ul></li>
+  <li><a href="#extractcolumn" id="toc-extractcolumn" class="nav-link" data-scroll-target="#extractcolumn">extractColumn</a>
+  <ul class="collapse">
+  <li><a href="#potek-funkcije-1" id="toc-potek-funkcije-1" class="nav-link" data-scroll-target="#potek-funkcije-1">Potek funkcije</a></li>
+  </ul></li>
+  <li><a href="#unique" id="toc-unique" class="nav-link" data-scroll-target="#unique">unique</a>
+  <ul class="collapse">
+  <li><a href="#potek-funkcije-2" id="toc-potek-funkcije-2" class="nav-link" data-scroll-target="#potek-funkcije-2">potek funkcije</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Implementacija Naive Bayes algoritma</h1>
+<p class="subtitle lead">Strojno učenje in podatkovno rudarjenje</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Jan Panjan </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="kaj-so-naive-bayes-algoritmi" class="level1">
+<h1>Kaj so Naive Bayes algoritmi</h1>
+<p>To je družina algoritmov zasnovanih na podlagi Bayesovega teorema. <em>Naive</em>, ker ima preveč splošen pogled na podatke. Sklepa, da so spremenljivke med seboj neodvisne. Kljub temu so veliko uporabljeni zaradi njihove preproste implementacije in uporabnosti v svetu strojnega učenja.</p>
+<p>Uporablja se pri problemih, ki zahtevjao klasifikacijo. Model predicta verjetnost, da podatek pripada nekemu razredu glede na podane podatke. Uporabili bomo weather dataset, ki opisuje vremenske razmere ter ali je v redu, da igramo golf v teh razmerah.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">head</span>(<span class="fu">read.table</span>(<span class="st">"weather.txt"</span>), <span class="dv">3</span>) <span class="sc">%&gt;%</span> {<span class="fu">names</span>(.) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"weather"</span>, <span class="st">"temperature"</span>, <span class="st">"humidity"</span>, <span class="st">"windy"</span>); .}</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">weather</th>
+<th style="text-align: left;">temperature</th>
+<th style="text-align: left;">humidity</th>
+<th style="text-align: left;">windy</th>
+<th style="text-align: left;">NA</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Rainy</td>
+<td style="text-align: left;">Hot</td>
+<td style="text-align: left;">High</td>
+<td style="text-align: left;">False</td>
+<td style="text-align: left;">No</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Rainy</td>
+<td style="text-align: left;">Hot</td>
+<td style="text-align: left;">High</td>
+<td style="text-align: left;">True</td>
+<td style="text-align: left;">No</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Overcast</td>
+<td style="text-align: left;">Hot</td>
+<td style="text-align: left;">High</td>
+<td style="text-align: left;">False</td>
+<td style="text-align: left;">Yes</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><br></p>
+<p>Data frame je sestavljen iz dveh delov - <strong>feature matrix</strong> in <strong>response vector</strong>:</p>
+<ol type="1">
+<li><strong>Feature matrix</strong> vsebuje vse vrstice, v katerih so vrednosti, ki jih bo model analiziral.</li>
+<li><strong>Response vector</strong> vsebuje class spremenljivke (to kar mora model predictat) za vsako vrstico podatkovnega okvirja.</li>
+</ol>
+</section>
+<section id="main-class" class="level1">
+<h1>Main class</h1>
+<p>To je vstopna točka programa. Tu hranimo data frame in kličemo funkcijo <strong>train</strong>, ki bo <em>natrenirala</em> naš model.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>Main.java</strong></pre>
+</div>
+<div class="sourceCode" id="cb2" data-filename="Main.java"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Main <span class="op">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        <span class="bu">String</span><span class="op">[][]</span> data <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                <span class="op">{</span><span class="st">"Sunny"</span><span class="op">,</span> <span class="st">"Hot"</span><span class="op">,</span> <span class="st">"High"</span><span class="op">,</span> <span class="st">"False"</span><span class="op">,</span> <span class="st">"No"</span><span class="op">},</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                <span class="op">{</span><span class="st">"Sunny"</span><span class="op">,</span> <span class="st">"Hot"</span><span class="op">,</span> <span class="st">"High"</span><span class="op">,</span> <span class="st">"True"</span><span class="op">,</span> <span class="st">"No"</span><span class="op">},</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                <span class="op">{</span><span class="st">"Overcast"</span><span class="op">,</span> <span class="st">"Hot"</span><span class="op">,</span> <span class="st">"High"</span><span class="op">,</span> <span class="st">"False"</span><span class="op">,</span> <span class="st">"Yes"</span><span class="op">},</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                <span class="op">{</span><span class="st">"Rainy"</span><span class="op">,</span> <span class="st">"Mild"</span><span class="op">,</span> <span class="st">"High"</span><span class="op">,</span> <span class="st">"False"</span><span class="op">,</span> <span class="st">"Yes"</span><span class="op">},</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                <span class="op">{</span><span class="st">"Rainy"</span><span class="op">,</span> <span class="st">"Cool"</span><span class="op">,</span> <span class="st">"Normal"</span><span class="op">,</span> <span class="st">"False"</span><span class="op">,</span> <span class="st">"Yes"</span><span class="op">},</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>                <span class="op">{</span><span class="st">"Rainy"</span><span class="op">,</span> <span class="st">"Cool"</span><span class="op">,</span> <span class="st">"Normal"</span><span class="op">,</span> <span class="st">"True"</span><span class="op">,</span> <span class="st">"No"</span><span class="op">},</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                <span class="op">{</span><span class="st">"Overcast"</span><span class="op">,</span> <span class="st">"Cool"</span><span class="op">,</span> <span class="st">"Normal"</span><span class="op">,</span> <span class="st">"True"</span><span class="op">,</span> <span class="st">"Yes"</span><span class="op">},</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                <span class="op">{</span><span class="st">"Sunny"</span><span class="op">,</span> <span class="st">"Mild"</span><span class="op">,</span> <span class="st">"High"</span><span class="op">,</span> <span class="st">"False"</span><span class="op">,</span> <span class="st">"No"</span><span class="op">},</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                <span class="op">{</span><span class="st">"Sunny"</span><span class="op">,</span> <span class="st">"Cool"</span><span class="op">,</span> <span class="st">"Normal"</span><span class="op">,</span> <span class="st">"False"</span><span class="op">,</span> <span class="st">"Yes"</span><span class="op">},</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>                <span class="op">{</span><span class="st">"Rainy"</span><span class="op">,</span> <span class="st">"Mild"</span><span class="op">,</span> <span class="st">"Normal"</span><span class="op">,</span> <span class="st">"False"</span><span class="op">,</span> <span class="st">"Yes"</span><span class="op">},</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>                <span class="op">{</span><span class="st">"Sunny"</span><span class="op">,</span> <span class="st">"Mild"</span><span class="op">,</span> <span class="st">"Normal"</span><span class="op">,</span> <span class="st">"True"</span><span class="op">,</span> <span class="st">"Yes"</span><span class="op">},</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>                <span class="op">{</span><span class="st">"Overcast"</span><span class="op">,</span> <span class="st">"Mild"</span><span class="op">,</span> <span class="st">"High"</span><span class="op">,</span> <span class="st">"True"</span><span class="op">,</span> <span class="st">"Yes"</span><span class="op">},</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>                <span class="op">{</span><span class="st">"Overcast"</span><span class="op">,</span> <span class="st">"Hot"</span><span class="op">,</span> <span class="st">"Normal"</span><span class="op">,</span> <span class="st">"False"</span><span class="op">,</span> <span class="st">"Yes"</span><span class="op">},</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>                <span class="op">{</span><span class="st">"Rainy"</span><span class="op">,</span> <span class="st">"Mild"</span><span class="op">,</span> <span class="st">"High"</span><span class="op">,</span> <span class="st">"True"</span><span class="op">,</span> <span class="st">"No"</span><span class="op">}</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>        <span class="op">};</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>        <span class="bu">String</span><span class="op">[][]</span> X <span class="op">=</span> <span class="bu">Util</span><span class="op">.</span><span class="fu">removeColumn</span><span class="op">(</span>data<span class="op">,</span> <span class="dv">4</span><span class="op">);</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        <span class="bu">String</span><span class="op">[]</span> Y <span class="op">=</span> <span class="bu">Util</span><span class="op">.</span><span class="fu">extractColumn</span><span class="op">(</span>data<span class="op">,</span> <span class="dv">4</span><span class="op">);</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>        NaiveBayes nb <span class="op">=</span> <span class="kw">new</span> <span class="fu">NaiveBayes</span><span class="op">();</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>        nb<span class="op">.</span><span class="fu">train</span><span class="op">(</span>X<span class="op">,</span> Y<span class="op">);</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>        nb<span class="op">.</span><span class="fu">display</span><span class="op">();</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>2D polje <strong>data</strong> hrani naše podatke. Zadnji stolpec je <strong>class</strong> stolpec z vrednostmi yes in no.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">String</span><span class="op">[][]</span> data <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span><span class="st">"Sunny"</span><span class="op">,</span> <span class="st">"Hot"</span><span class="op">,</span> <span class="st">"High"</span><span class="op">,</span> <span class="st">"False"</span><span class="op">,</span> <span class="st">"No"</span><span class="op">},</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="op">{</span><span class="st">"Sunny"</span><span class="op">,</span> <span class="st">"Hot"</span><span class="op">,</span> <span class="st">"High"</span><span class="op">,</span> <span class="st">"True"</span><span class="op">,</span> <span class="st">"No"</span><span class="op">},</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="op">{</span><span class="st">"Overcast"</span><span class="op">,</span> <span class="st">"Hot"</span><span class="op">,</span> <span class="st">"High"</span><span class="op">,</span> <span class="st">"False"</span><span class="op">,</span> <span class="st">"Yes"</span><span class="op">},</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="op">{</span><span class="st">"Rainy"</span><span class="op">,</span> <span class="st">"Mild"</span><span class="op">,</span> <span class="st">"High"</span><span class="op">,</span> <span class="st">"False"</span><span class="op">,</span> <span class="st">"Yes"</span><span class="op">},</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="op">{</span><span class="st">"Rainy"</span><span class="op">,</span> <span class="st">"Cool"</span><span class="op">,</span> <span class="st">"Normal"</span><span class="op">,</span> <span class="st">"False"</span><span class="op">,</span> <span class="st">"Yes"</span><span class="op">},</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="op">{</span><span class="st">"Rainy"</span><span class="op">,</span> <span class="st">"Cool"</span><span class="op">,</span> <span class="st">"Normal"</span><span class="op">,</span> <span class="st">"True"</span><span class="op">,</span> <span class="st">"No"</span><span class="op">},</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="op">{</span><span class="st">"Overcast"</span><span class="op">,</span> <span class="st">"Cool"</span><span class="op">,</span> <span class="st">"Normal"</span><span class="op">,</span> <span class="st">"True"</span><span class="op">,</span> <span class="st">"Yes"</span><span class="op">},</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="op">{</span><span class="st">"Sunny"</span><span class="op">,</span> <span class="st">"Mild"</span><span class="op">,</span> <span class="st">"High"</span><span class="op">,</span> <span class="st">"False"</span><span class="op">,</span> <span class="st">"No"</span><span class="op">},</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="op">{</span><span class="st">"Sunny"</span><span class="op">,</span> <span class="st">"Cool"</span><span class="op">,</span> <span class="st">"Normal"</span><span class="op">,</span> <span class="st">"False"</span><span class="op">,</span> <span class="st">"Yes"</span><span class="op">},</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="op">{</span><span class="st">"Rainy"</span><span class="op">,</span> <span class="st">"Mild"</span><span class="op">,</span> <span class="st">"Normal"</span><span class="op">,</span> <span class="st">"False"</span><span class="op">,</span> <span class="st">"Yes"</span><span class="op">},</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="op">{</span><span class="st">"Sunny"</span><span class="op">,</span> <span class="st">"Mild"</span><span class="op">,</span> <span class="st">"Normal"</span><span class="op">,</span> <span class="st">"True"</span><span class="op">,</span> <span class="st">"Yes"</span><span class="op">},</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="op">{</span><span class="st">"Overcast"</span><span class="op">,</span> <span class="st">"Mild"</span><span class="op">,</span> <span class="st">"High"</span><span class="op">,</span> <span class="st">"True"</span><span class="op">,</span> <span class="st">"Yes"</span><span class="op">},</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="op">{</span><span class="st">"Overcast"</span><span class="op">,</span> <span class="st">"Hot"</span><span class="op">,</span> <span class="st">"Normal"</span><span class="op">,</span> <span class="st">"False"</span><span class="op">,</span> <span class="st">"Yes"</span><span class="op">},</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="op">{</span><span class="st">"Rainy"</span><span class="op">,</span> <span class="st">"Mild"</span><span class="op">,</span> <span class="st">"High"</span><span class="op">,</span> <span class="st">"True"</span><span class="op">,</span> <span class="st">"No"</span><span class="op">}</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Data razdeli v <strong>X</strong> in <strong>Y</strong> polji. X so features in Y so class labels. To naredita funkciji <strong>removeColumn</strong> in <strong>extractColumn</strong>, del <strong>Util.java</strong> razreda.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">String</span><span class="op">[][]</span> X <span class="op">=</span> <span class="bu">Util</span><span class="op">.</span><span class="fu">removeColumn</span><span class="op">(</span>data<span class="op">,</span> <span class="dv">4</span><span class="op">);</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">String</span><span class="op">[]</span> Y <span class="op">=</span> <span class="bu">Util</span><span class="op">.</span><span class="fu">extractColumn</span><span class="op">(</span>data<span class="op">,</span> <span class="dv">4</span><span class="op">);</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>NaiveBayes model je ustvarjen kot <strong>nb</strong> in trained s funkcijo <strong>train</strong>. Rezultati so predstavljeni s <strong>display</strong> funkcijo. Obe sta del <code>NaiveBayes.java</code> razreda.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>NaiveBayes nb <span class="op">=</span> <span class="kw">new</span> <span class="fu">NaiveBayes</span><span class="op">();</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>nb<span class="op">.</span><span class="fu">train</span><span class="op">(</span>X<span class="op">,</span> Y<span class="op">);</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>nb<span class="op">.</span><span class="fu">display</span><span class="op">();</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="util-class" class="level1">
+<h1>Util class</h1>
+<p>Razred vsebuje <em>utility</em> funkcije za preprocessing naših podatkov, kar je zelo pomembno za Naive Bayes model.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>Util.java</strong></pre>
+</div>
+<div class="sourceCode" id="cb6" data-filename="Util.java"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">ArrayList</span><span class="op">;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="bu">Util</span> <span class="op">{</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="bu">String</span><span class="op">[][]</span> <span class="fu">removeColumn</span><span class="op">(</span><span class="bu">String</span><span class="op">[][]</span> data<span class="op">,</span> <span class="dt">int</span> colToRemove<span class="op">)</span> <span class="op">{</span><span class="kw">...</span><span class="op">}</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="bu">String</span><span class="op">[]</span> <span class="fu">extractColumn</span><span class="op">(</span><span class="bu">String</span><span class="op">[][]</span> data<span class="op">,</span> <span class="dt">int</span> colToExtract<span class="op">)</span> <span class="op">{</span><span class="kw">...</span><span class="op">}</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="bu">ArrayList</span><span class="op">&lt;</span><span class="bu">String</span><span class="op">&gt;</span> <span class="fu">unique</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> columns<span class="op">)</span> <span class="op">{</span><span class="kw">...</span><span class="op">}</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="removecolumn" class="level2">
+<h2 class="anchored" data-anchor-id="removecolumn">removeColumn</h2>
+<p>Funkcija odstrani zadnji column (class spremenljivka) iz dataseta. Kot argumenta vzame 2D polje <strong>data</strong> in int vrednost <strong>colToRemove</strong>. V našem je to četrti column, zato da lahko v ostane le <strong>feature matrix</strong>.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>Util.java</strong></pre>
+</div>
+<div class="sourceCode" id="cb7" data-filename="Util.java"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="dt">static</span> <span class="bu">String</span><span class="op">[][]</span> <span class="fu">removeColumn</span><span class="op">(</span><span class="bu">String</span><span class="op">[][]</span> data<span class="op">,</span> <span class="dt">int</span> colToRemove<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> numOfRows <span class="op">=</span> data<span class="op">.</span><span class="fu">length</span><span class="op">;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> numOfCols <span class="op">=</span> data<span class="op">[</span><span class="dv">0</span><span class="op">].</span><span class="fu">length</span> <span class="op">-</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">String</span><span class="op">[][]</span> newData <span class="op">=</span> <span class="kw">new</span> <span class="bu">String</span><span class="op">[</span>numOfRows<span class="op">][</span>numOfCols<span class="op">];</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> row <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> row <span class="op">&lt;</span> numOfRows<span class="op">;</span> row<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        <span class="bu">ArrayList</span><span class="op">&lt;</span><span class="bu">String</span><span class="op">&gt;</span> newRow <span class="op">=</span> <span class="kw">new</span> <span class="bu">ArrayList</span><span class="op">&lt;&gt;();</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> col <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> col <span class="op">&lt;</span> numOfCols<span class="op">;</span> col<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="op">(</span>col <span class="op">!=</span> colToRemove<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>                newRow<span class="op">.</span><span class="fu">add</span><span class="op">(</span>data<span class="op">[</span>row<span class="op">][</span>col<span class="op">]);</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        <span class="bu">String</span><span class="op">[]</span> newRowArray <span class="op">=</span> newRow<span class="op">.</span><span class="fu">toArray</span><span class="op">(</span><span class="kw">new</span> <span class="bu">String</span><span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        newData<span class="op">[</span>row<span class="op">]</span> <span class="op">=</span> newRowArray<span class="op">;</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> newData<span class="op">;</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="potek-funkcije" class="level3">
+<h3 class="anchored" data-anchor-id="potek-funkcije">Potek funkcije</h3>
+<p>Začne s tem, da najde število vrstic in stolpcev. Število vrstic predstavlja <strong>data.length</strong>, število stolpcev, ki jih želimo ohranit pa je <strong>data[0].length - 1</strong>.</p>
+<p>S temi podatki ustvarimo inicializiramo novo polje, ki ga bomo zafilali s pravimi podatki in vrnili.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> numOfRows <span class="op">=</span> data<span class="op">.</span><span class="fu">length</span><span class="op">;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> numOfCols <span class="op">=</span> data<span class="op">[</span><span class="dv">0</span><span class="op">].</span><span class="fu">length</span> <span class="op">-</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="bu">String</span><span class="op">[][]</span> newData <span class="op">=</span> <span class="kw">new</span> <span class="bu">String</span><span class="op">[</span>numOfRows<span class="op">][</span>numOfCols<span class="op">];</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Z dvema for loopoma gremo čez vrstice in stolpce. Vsako novo iteracijo vrstice ustvarimo <strong>ArrayList<string> newRow</string></strong>, ki omogoča dinamično alokacijo spomina.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> row <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> row <span class="op">&lt;</span> numOfRows<span class="op">;</span> row<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">ArrayList</span><span class="op">&lt;</span><span class="bu">String</span><span class="op">&gt;</span> newRow <span class="op">=</span> <span class="kw">new</span> <span class="bu">ArrayList</span><span class="op">&lt;&gt;();</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> col <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> col <span class="op">&lt;</span> numOfCols<span class="op">;</span> col<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        <span class="co">// ...</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Ko gre čez stolpce, if stavek preskoči <strong>colToRemove</strong> oziroma zadnji stolpec naših podatkov. Vse ostale doda v polje s funkcijo <strong>add</strong>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>col <span class="op">!=</span> colToRemove<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    newRow<span class="op">.</span><span class="fu">add</span><span class="op">(</span>data<span class="op">[</span>row<span class="op">][</span>col<span class="op">]);</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>ArrayList pretvorimo nazaj v normalen Array tipa string, Funkciji <strong>toArray</strong> pošljemo argument <strong>new String[0]</strong> kot template za novo polje. Če je velikost podanega polja manj, kot polje na katerem kličemo funkcijo (newRow), potem funkcija ustvari novo polje istega tipa s pravo velikostjo in vrne to polje.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">String</span><span class="op">[]</span> newArray <span class="op">=</span> newRow<span class="op">.</span><span class="fu">toArray</span><span class="op">(</span><span class="kw">new</span> <span class="bu">String</span><span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Na koncu shranimo v <strong>newData[row]</strong> (element v polju za trenutno iteracijo) novo polje in vrnemo nove podatke.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>newData<span class="op">[</span>row<span class="op">]</span> <span class="op">=</span> newArray<span class="op">;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> newData</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="extractcolumn" class="level2">
+<h2 class="anchored" data-anchor-id="extractcolumn">extractColumn</h2>
+<p>Funkcija extracta en column iz podatkov in ga vrne kot 1D polje. Uporabimo jo, da dobimo response vector iz podatkov. Sprejme 2D polje <strong>data</strong> in int <strong>colToExtract</strong> (v našem primeru zadnji class column).</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>Util.java</strong></pre>
+</div>
+<div class="sourceCode" id="cb13" data-filename="Util.java"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="dt">static</span> <span class="bu">String</span><span class="op">[]</span> <span class="fu">extractColumn</span><span class="op">(</span><span class="bu">String</span><span class="op">[][]</span> data<span class="op">,</span> <span class="dt">int</span> colToExtract<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">String</span><span class="op">[]</span> column <span class="op">=</span> <span class="kw">new</span> <span class="bu">String</span><span class="op">[</span>data<span class="op">.</span><span class="fu">length</span><span class="op">];</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> row <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> row <span class="op">&lt;</span> data<span class="op">.</span><span class="fu">length</span><span class="op">;</span> row<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>        column<span class="op">[</span>row<span class="op">]</span> <span class="op">=</span> data<span class="op">[</span>row<span class="op">][</span>colToExtract<span class="op">];</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> column<span class="op">;</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="potek-funkcije-1" class="level3">
+<h3 class="anchored" data-anchor-id="potek-funkcije-1">Potek funkcije</h3>
+<p>Začnemo s tem, da ustvarimo novo polje dolžine data, ki bo hranilo vrednosti class stolpca.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="bu">String</span><span class="op">[]</span> column <span class="op">=</span> <span class="kw">new</span> <span class="bu">String</span><span class="op">[</span>data<span class="op">.</span><span class="fu">length</span><span class="op">];</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Nato loopamo čez vrstice podatkov in v novi <strong>column</strong> array shranimo le tisti element iz podatkov, ki ga želimo.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> row <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> row <span class="op">&lt;</span> data<span class="op">.</span><span class="fu">length</span><span class="op">;</span> row<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>        column<span class="op">[</span>row<span class="op">]</span> <span class="op">=</span> data<span class="op">[</span>row<span class="op">][</span>colToExtract<span class="op">];</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> column<span class="op">;</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="unique" class="level2">
+<h2 class="anchored" data-anchor-id="unique">unique</h2>
+<p>Funkcija vzame 1D polje <strong>columns</strong> in vrne ArrayList unikatnih vrednosti. Uporabimo jo, da najdemo različne vrednosti v feature matriki in response vektorju.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>Util.java</strong></pre>
+</div>
+<div class="sourceCode" id="cb16" data-filename="Util.java"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="dt">static</span> <span class="bu">ArrayList</span><span class="op">&lt;</span><span class="bu">String</span><span class="op">&gt;</span> <span class="fu">unique</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> columns<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">ArrayList</span><span class="op">&lt;</span><span class="bu">String</span><span class="op">&gt;</span> uniqueValues <span class="op">=</span> <span class="kw">new</span> <span class="bu">ArrayList</span><span class="op">&lt;&gt;();</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="bu">String</span> value <span class="op">:</span> columns<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(!</span>uniqueValues<span class="op">.</span><span class="fu">contains</span><span class="op">(</span>value<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>            uniqueValues<span class="op">.</span><span class="fu">add</span><span class="op">(</span>value<span class="op">);</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> uniqueValues<span class="op">;</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="potek-funkcije-2" class="level3">
+<h3 class="anchored" data-anchor-id="potek-funkcije-2">potek funkcije</h3>
+<p>Ustvarimo ArrayList, ki bo nosil vrednosti.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">ArrayList</span><span class="op">&lt;</span><span class="bu">String</span><span class="op">&gt;</span> uniqueValues <span class="op">=</span> <span class="kw">new</span> <span class="bu">ArrayList</span><span class="op">&lt;&gt;();</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Gremo čez vrednosti v polju in jih dajemo v novo polje. Ko naletimo na vrednost, ki je že v polju, jo preskočimo. Vrnemo polje.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span><span class="bu">String</span> value <span class="op">:</span> columns<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(!</span>uniqueValues<span class="op">.</span><span class="fu">contains</span><span class="op">(</span>value<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>        uniqueValues<span class="op">.</span><span class="fu">add</span><span class="op">(</span>value<span class="op">);</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> uniqueValues<span class="op">;</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
