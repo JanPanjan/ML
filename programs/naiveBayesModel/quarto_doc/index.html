@@ -69,6 +69,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="index_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="index_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -97,6 +126,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#potek-funkcije-2" id="toc-potek-funkcije-2" class="nav-link" data-scroll-target="#potek-funkcije-2">potek funkcije</a></li>
   </ul></li>
   </ul></li>
+  <li><a href="#naivebayes-class" id="toc-naivebayes-class" class="nav-link" data-scroll-target="#naivebayes-class">NaiveBayes class</a>
+  <ul class="collapse">
+  <li><a href="#train-funkcija" id="toc-train-funkcija" class="nav-link" data-scroll-target="#train-funkcija">train funkcija</a>
+  <ul class="collapse">
+  <li><a href="#zakaj-vsi-ti-koraki" id="toc-zakaj-vsi-ti-koraki" class="nav-link" data-scroll-target="#zakaj-vsi-ti-koraki">Zakaj vsi ti koraki?</a></li>
+  </ul></li>
+  <li><a href="#predict-funkcija" id="toc-predict-funkcija" class="nav-link" data-scroll-target="#predict-funkcija">predict funkcija</a></li>
+  <li><a href="#display-funkcija" id="toc-display-funkcija" class="nav-link" data-scroll-target="#display-funkcija">display funkcija</a></li>
+  </ul></li>
+  <li><a href="#columntable-class" id="toc-columntable-class" class="nav-link" data-scroll-target="#columntable-class">ColumnTable class</a>
+  <ul class="collapse">
+  <li><a href="#display-funkcija-1" id="toc-display-funkcija-1" class="nav-link" data-scroll-target="#display-funkcija-1">display funkcija</a></li>
+  </ul></li>
+  <li><a href="#classtable-class" id="toc-classtable-class" class="nav-link" data-scroll-target="#classtable-class">ClassTable class</a></li>
   </ul>
 </nav>
 </div>
@@ -240,15 +283,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Data razdeli v <strong>X</strong> in <strong>Y</strong> polji. X so features in Y so class labels. To naredita funkciji <strong>removeColumn</strong> in <strong>extractColumn</strong>, del <strong>Util.java</strong> razreda.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">String</span><span class="op">[][]</span> X <span class="op">=</span> <span class="bu">Util</span><span class="op">.</span><span class="fu">removeColumn</span><span class="op">(</span>data<span class="op">,</span> <span class="dv">4</span><span class="op">);</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">String</span><span class="op">[]</span> Y <span class="op">=</span> <span class="bu">Util</span><span class="op">.</span><span class="fu">extractColumn</span><span class="op">(</span>data<span class="op">,</span> <span class="dv">4</span><span class="op">);</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">String</span><span class="op">[]</span> Y <span class="op">=</span> <span class="bu">Util</span><span class="op">.</span><span class="fu">extractColumn</span><span class="op">(</span>data<span class="op">,</span> <span class="dv">4</span><span class="op">);</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>NaiveBayes model je ustvarjen kot <strong>nb</strong> in trained s funkcijo <strong>train</strong>. Rezultati so predstavljeni s <strong>display</strong> funkcijo. Obe sta del <code>NaiveBayes.java</code> razreda.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>NaiveBayes nb <span class="op">=</span> <span class="kw">new</span> <span class="fu">NaiveBayes</span><span class="op">();</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>nb<span class="op">.</span><span class="fu">train</span><span class="op">(</span>X<span class="op">,</span> Y<span class="op">);</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>nb<span class="op">.</span><span class="fu">display</span><span class="op">();</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>nb<span class="op">.</span><span class="fu">display</span><span class="op">();</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="util-class" class="level1">
@@ -280,16 +321,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> row <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> row <span class="op">&lt;</span> numOfRows<span class="op">;</span> row<span class="op">++)</span> <span class="op">{</span></span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        <span class="bu">ArrayList</span><span class="op">&lt;</span><span class="bu">String</span><span class="op">&gt;</span> newRow <span class="op">=</span> <span class="kw">new</span> <span class="bu">ArrayList</span><span class="op">&lt;&gt;();</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> col <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> col <span class="op">&lt;</span> numOfCols<span class="op">;</span> col<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="op">(</span>col <span class="op">!=</span> colToRemove<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>                newRow<span class="op">.</span><span class="fu">add</span><span class="op">(</span>data<span class="op">[</span>row<span class="op">][</span>col<span class="op">]);</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        <span class="bu">String</span><span class="op">[]</span> newRowArray <span class="op">=</span> newRow<span class="op">.</span><span class="fu">toArray</span><span class="op">(</span><span class="kw">new</span> <span class="bu">String</span><span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        newData<span class="op">[</span>row<span class="op">]</span> <span class="op">=</span> newRowArray<span class="op">;</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> newData<span class="op">;</span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> col <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> col <span class="op">&lt;</span> numOfCols<span class="op">;</span> col<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="op">(</span>col <span class="op">!=</span> colToRemove<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>                newRow<span class="op">.</span><span class="fu">add</span><span class="op">(</span>data<span class="op">[</span>row<span class="op">][</span>col<span class="op">]);</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        <span class="bu">String</span><span class="op">[]</span> newRowArray <span class="op">=</span> newRow<span class="op">.</span><span class="fu">toArray</span><span class="op">(</span><span class="kw">new</span> <span class="bu">String</span><span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>        newData<span class="op">[</span>row<span class="op">]</span> <span class="op">=</span> newRowArray<span class="op">;</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> newData<span class="op">;</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="potek-funkcije" class="level3">
 <h3 class="anchored" data-anchor-id="potek-funkcije">Potek funkcije</h3>
@@ -304,10 +347,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> row <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> row <span class="op">&lt;</span> numOfRows<span class="op">;</span> row<span class="op">++)</span> <span class="op">{</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">ArrayList</span><span class="op">&lt;</span><span class="bu">String</span><span class="op">&gt;</span> newRow <span class="op">=</span> <span class="kw">new</span> <span class="bu">ArrayList</span><span class="op">&lt;&gt;();</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> col <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> col <span class="op">&lt;</span> numOfCols<span class="op">;</span> col<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        <span class="co">// ...</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> col <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> col <span class="op">&lt;</span> numOfCols<span class="op">;</span> col<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>        <span class="co">// ...</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Ko gre čez stolpce, if stavek preskoči <strong>colToRemove</strong> oziroma zadnji stolpec naših podatkov. Vse ostale doda v polje s funkcijo <strong>add</strong>.</p>
 <div class="cell">
@@ -335,26 +379,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="sourceCode" id="cb13" data-filename="Util.java"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="dt">static</span> <span class="bu">String</span><span class="op">[]</span> <span class="fu">extractColumn</span><span class="op">(</span><span class="bu">String</span><span class="op">[][]</span> data<span class="op">,</span> <span class="dt">int</span> colToExtract<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">String</span><span class="op">[]</span> column <span class="op">=</span> <span class="kw">new</span> <span class="bu">String</span><span class="op">[</span>data<span class="op">.</span><span class="fu">length</span><span class="op">];</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> row <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> row <span class="op">&lt;</span> data<span class="op">.</span><span class="fu">length</span><span class="op">;</span> row<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>        column<span class="op">[</span>row<span class="op">]</span> <span class="op">=</span> data<span class="op">[</span>row<span class="op">][</span>colToExtract<span class="op">];</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> column<span class="op">;</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> row <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> row <span class="op">&lt;</span> data<span class="op">.</span><span class="fu">length</span><span class="op">;</span> row<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>        column<span class="op">[</span>row<span class="op">]</span> <span class="op">=</span> data<span class="op">[</span>row<span class="op">][</span>colToExtract<span class="op">];</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> column<span class="op">;</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="potek-funkcije-1" class="level3">
 <h3 class="anchored" data-anchor-id="potek-funkcije-1">Potek funkcije</h3>
 <p>Začnemo s tem, da ustvarimo novo polje dolžine data, ki bo hranilo vrednosti class stolpca.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="bu">String</span><span class="op">[]</span> column <span class="op">=</span> <span class="kw">new</span> <span class="bu">String</span><span class="op">[</span>data<span class="op">.</span><span class="fu">length</span><span class="op">];</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="bu">String</span><span class="op">[]</span> column <span class="op">=</span> <span class="kw">new</span> <span class="bu">String</span><span class="op">[</span>data<span class="op">.</span><span class="fu">length</span><span class="op">];</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Nato loopamo čez vrstice podatkov in v novi <strong>column</strong> array shranimo le tisti element iz podatkov, ki ga želimo.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> row <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> row <span class="op">&lt;</span> data<span class="op">.</span><span class="fu">length</span><span class="op">;</span> row<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>        column<span class="op">[</span>row<span class="op">]</span> <span class="op">=</span> data<span class="op">[</span>row<span class="op">][</span>colToExtract<span class="op">];</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> column<span class="op">;</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> row <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> row <span class="op">&lt;</span> data<span class="op">.</span><span class="fu">length</span><span class="op">;</span> row<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    column<span class="op">[</span>row<span class="op">]</span> <span class="op">=</span> data<span class="op">[</span>row<span class="op">][</span>colToExtract<span class="op">];</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> column<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
@@ -367,13 +411,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="sourceCode" id="cb16" data-filename="Util.java"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="dt">static</span> <span class="bu">ArrayList</span><span class="op">&lt;</span><span class="bu">String</span><span class="op">&gt;</span> <span class="fu">unique</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> columns<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">ArrayList</span><span class="op">&lt;</span><span class="bu">String</span><span class="op">&gt;</span> uniqueValues <span class="op">=</span> <span class="kw">new</span> <span class="bu">ArrayList</span><span class="op">&lt;&gt;();</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="bu">String</span> value <span class="op">:</span> columns<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(!</span>uniqueValues<span class="op">.</span><span class="fu">contains</span><span class="op">(</span>value<span class="op">))</span> <span class="op">{</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>            uniqueValues<span class="op">.</span><span class="fu">add</span><span class="op">(</span>value<span class="op">);</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> uniqueValues<span class="op">;</span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="bu">String</span> value <span class="op">:</span> columns<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(!</span>uniqueValues<span class="op">.</span><span class="fu">contains</span><span class="op">(</span>value<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>            uniqueValues<span class="op">.</span><span class="fu">add</span><span class="op">(</span>value<span class="op">);</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> uniqueValues<span class="op">;</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="potek-funkcije-2" class="level3">
 <h3 class="anchored" data-anchor-id="potek-funkcije-2">potek funkcije</h3>
@@ -389,11 +435,264 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>        uniqueValues<span class="op">.</span><span class="fu">add</span><span class="op">(</span>value<span class="op">);</span></span>
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> uniqueValues<span class="op">;</span></span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> uniqueValues<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
+</section>
+<section id="naivebayes-class" class="level1">
+<h1>NaiveBayes class</h1>
+<p>To je glavni razred za naš Naive Bayes model. Z njim implementiramo naš algoritem. Razred je sestavljen tako, da glede na podatke natrenira model in naredi predpostavke glede na frekvence podatkov v feature matriki in njihove class labels.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>NaiveBayes.java</strong></pre>
+</div>
+<div class="sourceCode" id="cb19" data-filename="NaiveBayes.java"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">ArrayList</span><span class="op">;</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">java</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">Arrays</span><span class="op">;</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> NaiveBayes <span class="op">{</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">private</span> ColumnTable<span class="op">[]</span> columnTables<span class="op">;</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">private</span> ClassTable classTable<span class="op">;</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">train</span><span class="op">(</span><span class="bu">String</span><span class="op">[][]</span> X<span class="op">,</span> <span class="bu">String</span><span class="op">[]</span> Y<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>        <span class="dt">int</span> numOfCols <span class="op">=</span> X<span class="op">[</span><span class="dv">0</span><span class="op">].</span><span class="fu">length</span><span class="op">;</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>        columnTables <span class="op">=</span> <span class="kw">new</span> ColumnTable<span class="op">[</span>numOfCols<span class="op">];</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> colIndex <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> colIndex <span class="op">&lt;</span> numOfCols<span class="op">;</span> colIndex<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>            <span class="bu">String</span><span class="op">[]</span> column <span class="op">=</span> <span class="bu">Util</span><span class="op">.</span><span class="fu">extractColumn</span><span class="op">(</span>X<span class="op">,</span> colIndex<span class="op">);</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>            columnTables<span class="op">[</span>colIndex<span class="op">]</span> <span class="op">=</span> <span class="kw">new</span> <span class="fu">ColumnTable</span><span class="op">(</span>column<span class="op">,</span> Y<span class="op">);</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>        classTable <span class="op">=</span> <span class="kw">new</span> <span class="fu">ClassTable</span><span class="op">(</span>Y<span class="op">);</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="bu">String</span> <span class="fu">predict</span><span class="op">(</span><span class="bu">String</span><span class="op">[][]</span> row<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="kw">null</span><span class="op">;</span></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">display</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span>ColumnTable table <span class="op">:</span> columnTables<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>            table<span class="op">.</span><span class="fu">display</span><span class="op">();</span></span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Razred nosi dva atributa - <strong>columnTables</strong> polje razreda ColumnTable in <strong>classTable</strong> razreda ClassTable.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">private</span> ColumnTable<span class="op">[]</span> columnTables<span class="op">;</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="kw">private</span> ClassTable classTable<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li><strong>columnTables</strong> : polje ColumnTable objektov, kjer vsak element predstavlja en stolpec v feature matriki v podatkih. Vsak columnTable hrani kolikokrat se vsak podatek pojavi z vsakim class labelom.</li>
+<li><strong>classTable</strong> : objekt classTable, ki hrani število ponovitev vsakega class labela v podatkih. To se bo uporabilo za računanje verjetnosti za vsak class label.</li>
+</ul>
+<section id="train-funkcija" class="level2">
+<h2 class="anchored" data-anchor-id="train-funkcija">train funkcija</h2>
+<p>Tu se model uči iz podatkov. Sprejme dva argumenta - 2D string polje <strong>X</strong> (vsaka vrstica predstavlja instanco, vsak stolpec pa feature) in string polje <strong>Y</strong> (class labels corresponding na vsako vrstico v X).</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>NaiveBayes.java</strong></pre>
+</div>
+<div class="sourceCode" id="cb21" data-filename="NaiveBayes.java"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="dt">void</span> <span class="fu">train</span><span class="op">(</span><span class="bu">String</span><span class="op">[][]</span> X<span class="op">,</span> <span class="bu">String</span><span class="op">[]</span> Y<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> numOfCols <span class="op">=</span> X<span class="op">[</span><span class="dv">0</span><span class="op">].</span><span class="fu">length</span><span class="op">;</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    columnTables <span class="op">=</span> <span class="kw">new</span> ColumnTable<span class="op">[</span>numOfCols<span class="op">];</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> colIndex <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> colIndex <span class="op">&lt;</span> numOfCols<span class="op">;</span> colIndex<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>        <span class="bu">String</span><span class="op">[]</span> column <span class="op">=</span> <span class="bu">Util</span><span class="op">.</span><span class="fu">extractColumn</span><span class="op">(</span>X<span class="op">,</span> colIndex<span class="op">);</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>        columnTables<span class="op">[</span>colIndex<span class="op">]</span> <span class="op">=</span> <span class="kw">new</span> <span class="fu">ColumnTable</span><span class="op">(</span>column<span class="op">,</span> Y<span class="op">);</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    classTable <span class="op">=</span> <span class="kw">new</span> <span class="fu">ClassTable</span><span class="op">(</span>Y<span class="op">);</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Začne s tem, da dobi število stolpev iz X parametra (podatki) in v columnTables atribut shrani nov columnTable dolžine dobljenih stolpev.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> numOfCols <span class="op">=</span> X<span class="op">[</span><span class="dv">0</span><span class="op">].</span><span class="fu">length</span><span class="op">;</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>columnTables <span class="op">=</span> <span class="kw">new</span> ColumnTable<span class="op">[</span>numOfCols<span class="op">];</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Nato gre čez vsak stolpec v X in uporabi <strong>extractColumn</strong> funkcijo iz Util razreda, da dobi seznam podatkov (trenutna vrstica), kar shrani v column string polje.</p>
+<p>Za vsako ekstrahirano vrstico ustvari columnTables objekt, v katerem bodo shranjene frekvence featurjev za vsak class label.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> colIndex <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> colIndex <span class="op">&lt;</span> numOfCols<span class="op">;</span> colIndex<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">String</span><span class="op">[]</span> column <span class="op">=</span> <span class="bu">Util</span><span class="op">.</span><span class="fu">extractColumn</span><span class="op">(</span>X<span class="op">,</span> colIndex<span class="op">);</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    columnTables<span class="op">[</span>colIndex<span class="op">]</span> <span class="op">=</span> <span class="kw">new</span> <span class="fu">ColumnTable</span><span class="op">(</span>column<span class="op">,</span> Y<span class="op">);</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Na koncu v classTable atribut shrani novo instanco ClassTable glede na Y. Ta objekt bo hranil frekvence za vsak class label (koliko “Yes” in “No” se nahaja v Y).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>classTable <span class="op">=</span> <span class="kw">new</span> <span class="fu">ClassTable</span><span class="op">(</span>Y<span class="op">);</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="zakaj-vsi-ti-koraki" class="level3">
+<h3 class="anchored" data-anchor-id="zakaj-vsi-ti-koraki">Zakaj vsi ti koraki?</h3>
+<p>Naive Bayes algoritem mora vedeti:</p>
+<ol type="a">
+<li><strong>kako pogosto se pojavi vsak fature za vsak class label</strong> (npr. kolikokrat se “Sunny” pojavi, ko je class “Yes” ali “No”).</li>
+<li><strong>kako pogosto se vsak class label pojavi na sploh.</strong></li>
+</ol>
+<p>columnTables hrani torej <strong>a</strong> frekvence in classTable <strong>b</strong> frekvence.</p>
+</section>
+</section>
+<section id="predict-funkcija" class="level2">
+<h2 class="anchored" data-anchor-id="predict-funkcija">predict funkcija</h2>
+<p>Trenutno je to placeholder, ampak tu bo šla logika, kjer bo algoritem predvidel class labels za featurje.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>NaiveBayes.java</strong></pre>
+</div>
+<div class="sourceCode" id="cb25" data-filename="NaiveBayes.java"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="bu">String</span> <span class="fu">predict</span><span class="op">(</span><span class="bu">String</span><span class="op">[][]</span> row<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="kw">null</span><span class="op">;</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="display-funkcija" class="level2">
+<h2 class="anchored" data-anchor-id="display-funkcija">display funkcija</h2>
+<p>S to funkcijo gremo čez vsako polje v columnTables atributu (frekvence featurjev). Na vsakem polju kliče <strong>display</strong> funkcijo iz <strong>ColumnTable</strong> razreda.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>NaiveBayes.java</strong></pre>
+</div>
+<div class="sourceCode" id="cb26" data-filename="NaiveBayes.java"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="dt">void</span> <span class="fu">display</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span>ColumnTable table <span class="op">:</span> columnTables<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>        table<span class="op">.</span><span class="fu">display</span><span class="op">();</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+<p>NaiveBayes razred hrani še dva helper razreda - ColumnTable in ClassTable, ki sta pomembna pri izračunu frekvenc podatkov.</p>
+</section>
+</section>
+<section id="columntable-class" class="level1">
+<h1>ColumnTable class</h1>
+<p>Razred je pomemben za izračun pojavitev featurjev za vsak class (kolikokrat se “Sunny” ponovi za “Yes” in kolikokrat za “No”).</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>NaiveBayes.java</strong></pre>
+</div>
+<div class="sourceCode" id="cb27" data-filename="NaiveBayes.java"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> ColumnTable<span class="op">{</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">int</span><span class="op">[][]</span> counts<span class="op">;</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">private</span> <span class="bu">ArrayList</span><span class="op">&lt;</span><span class="bu">String</span><span class="op">&gt;</span> columnValues<span class="op">;</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">private</span> <span class="bu">ArrayList</span><span class="op">&lt;</span><span class="bu">String</span><span class="op">&gt;</span> classValues<span class="op">;</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="fu">ColumnTable</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> column<span class="op">,</span> <span class="bu">String</span><span class="op">[]</span> Y<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>        columnValues <span class="op">=</span> <span class="bu">Util</span><span class="op">.</span><span class="fu">unique</span><span class="op">(</span>column<span class="op">);</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>        classValues <span class="op">=</span> <span class="bu">Util</span><span class="op">.</span><span class="fu">unique</span><span class="op">(</span>Y<span class="op">);</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>        counts <span class="op">=</span> <span class="kw">new</span> <span class="dt">int</span><span class="op">[</span>columnValues<span class="op">.</span><span class="fu">size</span><span class="op">()][</span>classValues<span class="op">.</span><span class="fu">size</span><span class="op">()];</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> row <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> row <span class="op">&lt;</span> column<span class="op">.</span><span class="fu">length</span><span class="op">;</span> row<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>            <span class="bu">String</span> columnValue <span class="op">=</span> column<span class="op">[</span>row<span class="op">];</span></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>            <span class="bu">String</span> classValue <span class="op">=</span> Y<span class="op">[</span>row<span class="op">];</span></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>            <span class="dt">int</span> countRow <span class="op">=</span> columnValues<span class="op">.</span><span class="fu">indexOf</span><span class="op">(</span>columnValue<span class="op">);</span></span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>            <span class="dt">int</span> countColumn <span class="op">=</span> classValues<span class="op">.</span><span class="fu">indexOf</span><span class="op">(</span>classValue<span class="op">);</span></span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>            counts<span class="op">[</span>countRow<span class="op">][</span>countColumn<span class="op">]++;</span></span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">display</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> row <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> row <span class="op">&lt;</span> counts<span class="op">.</span><span class="fu">length</span><span class="op">;</span> row<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a>            <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">print</span><span class="op">(</span>columnValues<span class="op">.</span><span class="fu">get</span><span class="op">(</span>row<span class="op">)</span> <span class="op">+</span> <span class="st">": "</span><span class="op">);</span></span>
+<span id="cb27-24"><a href="#cb27-24" aria-hidden="true" tabindex="-1"></a>            <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="bu">Arrays</span><span class="op">.</span><span class="fu">toString</span><span class="op">(</span>counts<span class="op">[</span>row<span class="op">]));</span></span>
+<span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb27-26"><a href="#cb27-26" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb27-27"><a href="#cb27-27" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Razred nosi tri atribute:</p>
+<ol type="1">
+<li>2D polje <strong>counts</strong></li>
+<li>string ArrayList <strong>columnValues</strong></li>
+<li>string ArrayList <strong>classValues</strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">private</span> <span class="dt">int</span><span class="op">[][]</span> counts<span class="op">;</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="kw">private</span> <span class="bu">ArrayList</span><span class="op">&lt;</span><span class="bu">String</span><span class="op">&gt;</span> columnValues<span class="op">;</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="kw">private</span> <span class="bu">ArrayList</span><span class="op">&lt;</span><span class="bu">String</span><span class="op">&gt;</span> classValues<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Ko ustvarimo predmet razreda ColumnTable, se zažene naslednji konstruktor, ki sprejme dva parametra - string polje <strong>column</strong> in string polje <strong>Y</strong>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="fu">ColumnTable</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> column<span class="op">,</span> <span class="bu">String</span><span class="op">[]</span> Y<span class="op">)</span> <span class="op">{</span> <span class="kw">...</span> <span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Najprej pripiše privatnim atributom vrednosti:</p>
+<ul>
+<li>v <strong>columnValues</strong> se shranijo unikatne vrednosti v vsakem stolpcu (column) s pomočjo unique funkcije iz Util razreda.</li>
+<li>v <strong>classValues</strong> se shranijo unikatne vrednosti class labels(Y), prav tako z unique funkcijo.</li>
+<li>v <strong>counts</strong> se shrani prazno int 2D polje velikosti <span class="math inline">\(columnValues \times
+classValues\)</span></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>columnValues <span class="op">=</span> <span class="bu">Util</span><span class="op">.</span><span class="fu">unique</span><span class="op">(</span>column<span class="op">);</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>classValues <span class="op">=</span> <span class="bu">Util</span><span class="op">.</span><span class="fu">unique</span><span class="op">(</span>Y<span class="op">);</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>counts <span class="op">=</span> <span class="kw">new</span> <span class="dt">int</span><span class="op">[</span>columnValues<span class="op">.</span><span class="fu">size</span><span class="op">()][</span>classValues<span class="op">.</span><span class="fu">size</span><span class="op">()];</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Nato gre čez vsako vrstico iz column in jo shrani v string <strong>columnValue</strong>. V <strong>classValue</strong> string shrani vrstico iz Y. Funkcija <strong>indexOf</strong> najde, kje v columnValues se nahaja columnValue. Enako za classValues in classValue.</p>
+<p>Na koncu pravi element counts polja poveča za 1, kar pomeni, da se je v classValue in columnValue našla kombinacija.</p>
+<blockquote class="blockquote">
+<p>npr. sunny in yes se najde na 13-4 (+1 = 1), nato windy in no na 14-4 (+1 = 1), nato pa spet sunny in yes na 15-4 (+1 = 2).</p>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> row <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> row <span class="op">&lt;</span> column<span class="op">.</span><span class="fu">length</span><span class="op">;</span> row<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">String</span> columnValue <span class="op">=</span> column<span class="op">[</span>row<span class="op">];</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">String</span> classValue <span class="op">=</span> Y<span class="op">[</span>row<span class="op">];</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> countRow <span class="op">=</span> columnValues<span class="op">.</span><span class="fu">indexOf</span><span class="op">(</span>columnValue<span class="op">);</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> countColumn <span class="op">=</span> classValues<span class="op">.</span><span class="fu">indexOf</span><span class="op">(</span>classValue<span class="op">);</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    counts<span class="op">[</span>countRow<span class="op">][</span>countColumn<span class="op">]++;</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Tako se v ColumnTable objekt shranijo frekvence kombinacij featurjev in class labels.</p>
+<section id="display-funkcija-1" class="level2">
+<h2 class="anchored" data-anchor-id="display-funkcija-1">display funkcija</h2>
+<p>Funkcija gre čez vsako vrstico v ArrayListu columnValues in izpiše vrednost featurja ter število pojavitev.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">display</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> row <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> row <span class="op">&lt;</span> counts<span class="op">.</span><span class="fu">length</span><span class="op">;</span> row<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>            <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">print</span><span class="op">(</span>columnValues<span class="op">.</span><span class="fu">get</span><span class="op">(</span>row<span class="op">)</span> <span class="op">+</span> <span class="st">": "</span><span class="op">);</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>            <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="bu">Arrays</span><span class="op">.</span><span class="fu">toString</span><span class="op">(</span>counts<span class="op">[</span>row<span class="op">]));</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="classtable-class" class="level1">
+<h1>ClassTable class</h1>
+<p>Razred šteje kolikokrat se pojavi vsak class label. Nosi dva atributa:</p>
+<ul>
+<li>int polje <strong>counts</strong></li>
+<li>string ArrayList <strong>classValues</strong></li>
+</ul>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>NaiveBayes.java</strong></pre>
+</div>
+<div class="sourceCode" id="cb33" data-filename="NaiveBayes.java"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> ClassTable<span class="op">{</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">int</span><span class="op">[]</span> counts<span class="op">;</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">private</span> <span class="bu">ArrayList</span><span class="op">&lt;</span><span class="bu">String</span><span class="op">&gt;</span> classValues<span class="op">;</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="fu">ClassTable</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> Y<span class="op">){</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>        classValues <span class="op">=</span> <span class="bu">Util</span><span class="op">.</span><span class="fu">unique</span><span class="op">(</span>Y<span class="op">);</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>        counts <span class="op">=</span> <span class="kw">new</span> <span class="dt">int</span><span class="op">[</span>classValues<span class="op">.</span><span class="fu">size</span><span class="op">()];</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="bu">String</span> classValue <span class="op">:</span> Y<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>            <span class="dt">int</span> classIndex <span class="op">=</span> classValues<span class="op">.</span><span class="fu">indexOf</span><span class="op">(</span>classValue<span class="op">);</span></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>            counts<span class="op">[</span>classIndex<span class="op">]++;</span></span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Konstruktor shrani v classValues unikatne vrednosti v string polju <strong>Y</strong>, s pomočjo unique funkcije iz Util razreda, nato pa v counts pa shrani novo int polje velikosti classValues.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>classValues <span class="op">=</span> <span class="bu">Util</span><span class="op">.</span><span class="fu">unique</span><span class="op">(</span>Y<span class="op">);</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>counts <span class="op">=</span> <span class="kw">new</span> <span class="dt">int</span><span class="op">[</span>classValues<span class="op">.</span><span class="fu">size</span><span class="op">()];</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Gre čez vsak element v Y in v int <strong>classIndex</strong> shrani indeks od classValue v classValues (glej ColumnTable), nato pa poveča count od elementa na mestu classIndex v counts.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="bu">String</span> classValue <span class="op">:</span> Y<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>        <span class="dt">int</span> classIndex <span class="op">=</span> classValues<span class="op">.</span><span class="fu">indexOf</span><span class="op">(</span>classValue<span class="op">);</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>        counts<span class="op">[</span>classIndex<span class="op">]++;</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>S tem prešteje kolikokrat se vsak class label pojavi v Y polju.</p>
 </section>
 
 </main>

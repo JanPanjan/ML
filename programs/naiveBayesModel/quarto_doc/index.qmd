@@ -103,7 +103,6 @@ razreda.
 ```{java} 
 String[][] X = Util.removeColumn(data, 4);
 String[] Y = Util.extractColumn(data, 4);
-}
 ```
 
 NaiveBayes model je ustvarjen kot **nb** in trained s funkcijo **train**.
@@ -114,7 +113,6 @@ razreda.
 NaiveBayes nb = new NaiveBayes();
 nb.train(X, Y);
 nb.display();
-}
 ```
 
 # Util class
@@ -146,11 +144,13 @@ public static String[][] removeColumn(String[][] data, int colToRemove) {
 
     for (int row = 0; row < numOfRows; row++) {
         ArrayList<String> newRow = new ArrayList<>();
+
         for (int col = 0; col < numOfCols; col++) {
             if (col != colToRemove) {
                 newRow.add(data[row][col]);
             }
         }
+
         String[] newRowArray = newRow.toArray(new String[0]);
         newData[row] = newRowArray;
     }
@@ -178,11 +178,11 @@ ustvarimo **ArrayList<String> newRow**, ki omogoča dinamično alokacijo spomina
 ```{java} 
 for (int row = 0; row < numOfRows; row++) {
     ArrayList<String> newRow = new ArrayList<>();
+
     for (int col = 0; col < numOfCols; col++) {
         // ...
     }
 }
-
 ```
 
 Ko gre čez stolpce, if stavek preskoči **colToRemove** oziroma zadnji stolpec naših
@@ -208,7 +208,6 @@ polje in vrnemo nove podatke.
 ```{java} 
 newData[row] = newArray;
 return newData
-
 ```
 
 ## extractColumn
@@ -220,6 +219,7 @@ dobimo response vector iz podatkov. Sprejme 2D polje **data** in int **colToExtr
 ```{.java filename="Util.java"} 
 public static String[] extractColumn(String[][] data, int colToExtract) {
     String[] column = new String[data.length];
+
     for (int row = 0; row < data.length; row++) {
         column[row] = data[row][colToExtract];
     }
@@ -234,18 +234,17 @@ class stolpca.
 
 ```{java} 
 String[] column = new String[data.length];
-}
 ```
 
 Nato loopamo čez vrstice podatkov in v novi **column** array shranimo le tisti
 element iz podatkov, ki ga želimo.
 
 ```{java} 
-    for (int row = 0; row < data.length; row++) {
-        column[row] = data[row][colToExtract];
-    }
-    return column;
+for (int row = 0; row < data.length; row++) {
+    column[row] = data[row][colToExtract];
 }
+
+return column;
 ```
 
 ## unique
@@ -256,11 +255,13 @@ najdemo različne vrednosti v feature matriki in response vektorju.
 ```{.java filename="Util.java"} 
 public static ArrayList<String> unique(String[] columns) {
     ArrayList<String> uniqueValues = new ArrayList<>();
+
     for (String value : columns) {
         if (!uniqueValues.contains(value)) {
             uniqueValues.add(value);
         }
     }
+
     return uniqueValues;
 }
 ```
@@ -283,6 +284,305 @@ for (String value : columns) {
         uniqueValues.add(value);
     }
 }
+
 return uniqueValues;
+```
+
+# NaiveBayes class
+
+To je glavni razred za naš Naive Bayes model. Z njim implementiramo naš
+algoritem. Razred je sestavljen tako, da glede na podatke natrenira model
+in naredi predpostavke glede na frekvence podatkov v feature matriki in
+njihove class labels.
+
+```{.java filename="NaiveBayes.java"} 
+import java.util.ArrayList;
+import java.util.Arrays;
+
+class NaiveBayes {
+    private ColumnTable[] columnTables;
+    private ClassTable classTable;
+
+    public void train(String[][] X, String[] Y) {
+        int numOfCols = X[0].length;
+        columnTables = new ColumnTable[numOfCols];
+
+        for (int colIndex = 0; colIndex < numOfCols; colIndex++) {
+            String[] column = Util.extractColumn(X, colIndex);
+            columnTables[colIndex] = new ColumnTable(column, Y);
+        }
+
+        classTable = new ClassTable(Y);
+    }
+
+    public String predict(String[][] row) {
+        return null;
+    }
+
+    public void display() {
+        for (ColumnTable table : columnTables) {
+            table.display();
+        }
+    }
 }
 ```
+
+Razred nosi dva atributa - **columnTables** polje razreda ColumnTable in 
+**classTable** razreda ClassTable.
+
+```{java} 
+private ColumnTable[] columnTables;
+private ClassTable classTable;
+```
+
+- **columnTables** : polje ColumnTable objektov, kjer vsak element predstavlja
+en stolpec v feature matriki v podatkih. Vsak columnTable hrani kolikokrat se
+vsak podatek pojavi z vsakim class labelom.
+- **classTable** : objekt classTable, ki hrani število ponovitev vsakega
+class labela v podatkih. To se bo uporabilo za računanje verjetnosti za vsak
+class label.
+
+## train funkcija
+
+Tu se model uči iz podatkov. Sprejme dva argumenta - 2D string polje **X**
+(vsaka vrstica predstavlja instanco, vsak stolpec pa feature) in string 
+polje **Y** (class labels corresponding na vsako vrstico v X).
+
+```{.java filename="NaiveBayes.java"} 
+public void train(String[][] X, String[] Y) {
+    int numOfCols = X[0].length;
+    columnTables = new ColumnTable[numOfCols];
+
+    for (int colIndex = 0; colIndex < numOfCols; colIndex++) {
+        String[] column = Util.extractColumn(X, colIndex);
+        columnTables[colIndex] = new ColumnTable(column, Y);
+    }
+
+    classTable = new ClassTable(Y);
+}
+```
+
+Začne s tem, da dobi število stolpev iz X parametra (podatki) in v columnTables
+atribut shrani nov columnTable dolžine dobljenih stolpev.
+
+```{java} 
+int numOfCols = X[0].length;
+columnTables = new ColumnTable[numOfCols];
+```
+
+Nato gre čez vsak stolpec v X in uporabi **extractColumn** funkcijo iz Util
+razreda, da dobi seznam podatkov (trenutna vrstica), kar shrani v column string
+polje. 
+
+Za vsako ekstrahirano vrstico ustvari columnTables objekt, v katerem bodo
+shranjene frekvence featurjev za vsak class label. 
+
+```{java} 
+for (int colIndex = 0; colIndex < numOfCols; colIndex++) {
+    String[] column = Util.extractColumn(X, colIndex);
+    columnTables[colIndex] = new ColumnTable(column, Y);
+}
+```
+
+Na koncu v classTable atribut shrani novo instanco ClassTable glede na Y.
+Ta objekt bo hranil frekvence za vsak class label (koliko "Yes" in "No" se
+nahaja v Y).
+
+```{java} 
+classTable = new ClassTable(Y);
+```
+
+### Zakaj vsi ti koraki?
+
+Naive Bayes algoritem mora vedeti:
+
+a) **kako pogosto se pojavi vsak fature za vsak class label** (npr. kolikokrat se
+"Sunny" pojavi, ko je class "Yes" ali "No").
+b) **kako pogosto se vsak class label pojavi na sploh.**
+
+columnTables hrani torej **a** frekvence in classTable **b** frekvence.
+
+## predict funkcija
+
+Trenutno je to placeholder, ampak tu bo šla logika, kjer bo algoritem predvidel
+class labels za featurje.
+
+```{.java filename="NaiveBayes.java"} 
+public String predict(String[][] row) {
+    return null;
+}
+```
+
+## display funkcija
+
+S to funkcijo gremo čez vsako polje v columnTables atributu (frekvence
+featurjev). Na vsakem polju kliče **display** funkcijo iz **ColumnTable** 
+razreda.
+
+```{.java filename="NaiveBayes.java"} 
+public void display() {
+    for (ColumnTable table : columnTables) {
+        table.display();
+    }
+}
+```
+
+---
+
+NaiveBayes razred hrani še dva helper razreda - ColumnTable in ClassTable, ki
+sta pomembna pri izračunu frekvenc podatkov.
+
+# ColumnTable class
+
+Razred je pomemben za izračun pojavitev featurjev za vsak class (kolikokrat
+se "Sunny" ponovi za "Yes" in kolikokrat za "No").
+
+```{.java filename="NaiveBayes.java"} 
+class ColumnTable{
+    private int[][] counts;
+    private ArrayList<String> columnValues;
+    private ArrayList<String> classValues;
+
+    public ColumnTable(String[] column, String[] Y) {
+        columnValues = Util.unique(column);
+        classValues = Util.unique(Y);
+        counts = new int[columnValues.size()][classValues.size()];
+
+        for (int row = 0; row < column.length; row++) {
+            String columnValue = column[row];
+            String classValue = Y[row];
+            int countRow = columnValues.indexOf(columnValue);
+            int countColumn = classValues.indexOf(classValue);
+
+            counts[countRow][countColumn]++;
+        }
+    }
+
+    public void display() {
+        for (int row = 0; row < counts.length; row++) {
+            System.out.print(columnValues.get(row) + ": ");
+            System.out.println(Arrays.toString(counts[row]));
+        }
+    }
+}
+```
+
+Razred nosi tri atribute:
+
+1. 2D polje **counts**
+2. string ArrayList **columnValues**
+3. string ArrayList **classValues**
+
+```{java} 
+private int[][] counts;
+private ArrayList<String> columnValues;
+private ArrayList<String> classValues;
+```
+
+Ko ustvarimo predmet razreda ColumnTable, se zažene naslednji konstruktor,
+ki sprejme dva parametra - string polje **column** in string polje **Y**. 
+
+```{java} 
+public ColumnTable(String[] column, String[] Y) { ... }
+```
+
+Najprej pripiše privatnim atributom vrednosti:
+
+- v **columnValues** se shranijo unikatne vrednosti v vsakem stolpcu (column) 
+s pomočjo unique funkcije iz Util razreda.
+- v **classValues** se shranijo unikatne vrednosti class labels(Y), prav tako 
+z unique funkcijo.
+- v **counts** se shrani prazno int 2D polje velikosti $columnValues \times
+classValues$
+
+```{java} 
+columnValues = Util.unique(column);
+classValues = Util.unique(Y);
+counts = new int[columnValues.size()][classValues.size()];
+```
+
+Nato gre čez vsako vrstico iz column in jo shrani v string **columnValue**.
+V **classValue** string shrani vrstico iz Y. Funkcija **indexOf** najde, kje v
+columnValues se nahaja columnValue. Enako za classValues in classValue.
+
+Na koncu pravi element counts polja poveča za 1, kar pomeni, da se je v
+classValue in columnValue našla kombinacija.
+
+> npr. sunny in yes se najde na 13-4 (+1 = 1), nato windy in no na 14-4 
+> (+1 = 1), nato pa spet sunny in yes na 15-4 (+1 = 2).
+
+
+```{java} 
+for (int row = 0; row < column.length; row++) {
+    String columnValue = column[row];
+    String classValue = Y[row];
+    int countRow = columnValues.indexOf(columnValue);
+    int countColumn = classValues.indexOf(classValue);
+
+    counts[countRow][countColumn]++;
+}
+```
+
+Tako se v ColumnTable objekt shranijo frekvence kombinacij featurjev in
+class labels.
+
+## display funkcija
+
+Funkcija gre čez vsako vrstico v ArrayListu columnValues in izpiše vrednost
+featurja ter število pojavitev.
+
+```{java} 
+    public void display() {
+        for (int row = 0; row < counts.length; row++) {
+            System.out.print(columnValues.get(row) + ": ");
+            System.out.println(Arrays.toString(counts[row]));
+        }
+    }
+```
+
+# ClassTable class
+
+Razred šteje kolikokrat se pojavi vsak class label. Nosi dva atributa:
+
+- int polje **counts**
+- string ArrayList **classValues**
+
+```{.java filename="NaiveBayes.java"} 
+class ClassTable{
+    private int[] counts;
+    private ArrayList<String> classValues;
+
+    public ClassTable(String[] Y){
+        classValues = Util.unique(Y);
+        counts = new int[classValues.size()];
+
+        for (String classValue : Y) {
+            int classIndex = classValues.indexOf(classValue);
+            counts[classIndex]++;
+        }
+    }
+}
+```
+
+Konstruktor shrani v classValues unikatne vrednosti v string polju **Y**,
+s pomočjo unique funkcije iz Util razreda, nato pa v counts pa shrani 
+novo int polje velikosti classValues.
+
+```{java} 
+classValues = Util.unique(Y);
+counts = new int[classValues.size()];
+}
+```
+
+Gre čez vsak element v Y in v int **classIndex** shrani indeks od classValue
+v classValues (glej ColumnTable), nato pa poveča count od elementa na mestu
+classIndex v counts.
+
+```{java} 
+    for (String classValue : Y) {
+        int classIndex = classValues.indexOf(classValue);
+        counts[classIndex]++;
+    }
+```
+
+S tem prešteje kolikokrat se vsak class label pojavi v Y polju.
