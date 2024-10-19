@@ -8,6 +8,7 @@ format:
     toc: true
 ---
 
+
 # Kaj so Naive Bayes algoritmi
 
 To je družina algoritmov zasnovanih na podlagi Bayesovega teorema. *Naive*, ker
@@ -20,6 +21,7 @@ verjetnost, da podatek pripada nekemu razredu glede na podane podatke.
 Uporabili bomo weather dataset, ki opisuje vremenske razmere ter ali je v redu,
 da igramo golf v teh razmerah.
 
+
 ```{r} 
 #| code-fold: true
 #| warning: false
@@ -28,6 +30,7 @@ df <- head(read.table("weather.txt"), 3) %>% {names(.) <- c("weather", "temperat
 knitr::kable(df)
 
 ```
+
 
 <br>
 
@@ -77,6 +80,7 @@ public class Main {
 2D polje **data** hrani naše podatke. Zadnji stolpec je **class** stolpec z
 vrednostmi yes in no.
 
+
 ```{java} 
 String[][] data = {
 {"Sunny", "Hot", "High", "False", "No"},
@@ -96,24 +100,29 @@ String[][] data = {
 };
 ```
 
+
 Data razdeli v **X** in **Y** polji. X so features in Y so class labels.
 To naredita funkciji **removeColumn** in **extractColumn**, del **Util.java**
 razreda.
+
 
 ```{java} 
 String[][] X = Util.removeColumn(data, 4);
 String[] Y = Util.extractColumn(data, 4);
 ```
 
+
 NaiveBayes model je ustvarjen kot **nb** in trained s funkcijo **train**.
 Rezultati so predstavljeni s **display** funkcijo. Obe sta del `NaiveBayes.java`
 razreda.
+
 
 ```{java} 
 NaiveBayes nb = new NaiveBayes();
 nb.train(X, Y);
 nb.display();
 ```
+
 
 # Util class
 
@@ -166,14 +175,17 @@ Začne s tem, da najde število vrstic in stolpcev. Število vrstic predstavlja
 S temi podatki ustvarimo inicializiramo novo polje, ki ga bomo zafilali s pravimi
 podatki in vrnili.
 
+
 ```{java} 
 int numOfRows = data.length;
 int numOfCols = data[0].length - 1;
 String[][] newData = new String[numOfRows][numOfCols];
 ```
 
+
 Z dvema for loopoma gremo čez vrstice in stolpce. Vsako novo iteracijo vrstice
 ustvarimo **ArrayList<String> newRow**, ki omogoča dinamično alokacijo spomina.
+
 
 ```{java} 
 for (int row = 0; row < numOfRows; row++) {
@@ -185,8 +197,10 @@ for (int row = 0; row < numOfRows; row++) {
 }
 ```
 
+
 Ko gre čez stolpce, if stavek preskoči **colToRemove** oziroma zadnji stolpec naših
 podatkov. Vse ostale doda v polje s funkcijo **add**.
+
 
 ```{java} 
 if (col != colToRemove) {
@@ -194,21 +208,26 @@ if (col != colToRemove) {
 }
 ```
 
+
 ArrayList pretvorimo nazaj v normalen Array tipa string, Funkciji **toArray** 
 pošljemo argument **new String\[0]** kot template za novo polje. Če je velikost 
 podanega polja manj, kot polje na katerem kličemo funkcijo (newRow), potem 
 funkcija ustvari novo polje istega tipa s pravo velikostjo in vrne to polje.
 
+
 ```{java} 
 String[] newArray = newRow.toArray(new String[0]);
 ```
+
 Na koncu shranimo v **newData\[row]** (element v polju za trenutno iteracijo) novo
 polje in vrnemo nove podatke.
+
 
 ```{java} 
 newData[row] = newArray;
 return newData
 ```
+
 
 ## extractColumn
 
@@ -232,12 +251,15 @@ public static String[] extractColumn(String[][] data, int colToExtract) {
 Začnemo s tem, da ustvarimo novo polje dolžine data, ki bo hranilo vrednosti
 class stolpca.
 
+
 ```{java} 
 String[] column = new String[data.length];
 ```
 
+
 Nato loopamo čez vrstice podatkov in v novi **column** array shranimo le tisti
 element iz podatkov, ki ga želimo.
+
 
 ```{java} 
 for (int row = 0; row < data.length; row++) {
@@ -246,6 +268,7 @@ for (int row = 0; row < data.length; row++) {
 
 return column;
 ```
+
 
 ## unique
 
@@ -270,13 +293,16 @@ public static ArrayList<String> unique(String[] columns) {
 
 Ustvarimo ArrayList, ki bo nosil vrednosti.
 
+
 ```{java} 
 ArrayList<String> uniqueValues = new ArrayList<>();
 }
 ```
 
+
 Gremo čez vrednosti v polju in jih dajemo v novo polje. Ko naletimo na vrednost,
 ki je že v polju, jo preskočimo. Vrnemo polje.
+
 
 ```{java} 
 for (String value : columns) {
@@ -287,6 +313,7 @@ for (String value : columns) {
 
 return uniqueValues;
 ```
+
 
 # NaiveBayes class
 
@@ -330,10 +357,12 @@ class NaiveBayes {
 Razred nosi dva atributa - **columnTables** polje razreda ColumnTable in 
 **classTable** razreda ClassTable.
 
+
 ```{java} 
 private ColumnTable[] columnTables;
 private ClassTable classTable;
 ```
+
 
 - **columnTables** : polje ColumnTable objektov, kjer vsak element predstavlja
 en stolpec v feature matriki v podatkih. Vsak columnTable hrani kolikokrat se
@@ -365,10 +394,12 @@ public void train(String[][] X, String[] Y) {
 Začne s tem, da dobi število stolpev iz X parametra (podatki) in v columnTables
 atribut shrani nov columnTable dolžine dobljenih stolpev.
 
+
 ```{java} 
 int numOfCols = X[0].length;
 columnTables = new ColumnTable[numOfCols];
 ```
+
 
 Nato gre čez vsak stolpec v X in uporabi **extractColumn** funkcijo iz Util
 razreda, da dobi seznam podatkov (trenutna vrstica), kar shrani v column string
@@ -377,6 +408,7 @@ polje.
 Za vsako ekstrahirano vrstico ustvari columnTables objekt, v katerem bodo
 shranjene frekvence featurjev za vsak class label. 
 
+
 ```{java} 
 for (int colIndex = 0; colIndex < numOfCols; colIndex++) {
     String[] column = Util.extractColumn(X, colIndex);
@@ -384,13 +416,16 @@ for (int colIndex = 0; colIndex < numOfCols; colIndex++) {
 }
 ```
 
+
 Na koncu v classTable atribut shrani novo instanco ClassTable glede na Y.
 Ta objekt bo hranil frekvence za vsak class label (koliko "Yes" in "No" se
 nahaja v Y).
 
+
 ```{java} 
 classTable = new ClassTable(Y);
 ```
+
 
 ### Zakaj vsi ti koraki?
 
@@ -473,18 +508,22 @@ Razred nosi tri atribute:
 2. string ArrayList **columnValues**
 3. string ArrayList **classValues**
 
+
 ```{java} 
 private int[][] counts;
 private ArrayList<String> columnValues;
 private ArrayList<String> classValues;
 ```
 
+
 Ko ustvarimo predmet razreda ColumnTable, se zažene naslednji konstruktor,
 ki sprejme dva parametra - string polje **column** in string polje **Y**. 
+
 
 ```{java} 
 public ColumnTable(String[] column, String[] Y) { ... }
 ```
+
 
 Najprej pripiše privatnim atributom vrednosti:
 
@@ -495,11 +534,13 @@ z unique funkcijo.
 - v **counts** se shrani prazno int 2D polje velikosti $columnValues \times
 classValues$
 
+
 ```{java} 
 columnValues = Util.unique(column);
 classValues = Util.unique(Y);
 counts = new int[columnValues.size()][classValues.size()];
 ```
+
 
 Nato gre čez vsako vrstico iz column in jo shrani v string **columnValue**.
 V **classValue** string shrani vrstico iz Y. Funkcija **indexOf** najde, kje v
@@ -510,6 +551,7 @@ classValue in columnValue našla kombinacija.
 
 > npr. sunny in yes se najde na 13-4 (+1 = 1), nato windy in no na 14-4 
 > (+1 = 1), nato pa spet sunny in yes na 15-4 (+1 = 2).
+
 
 
 ```{java} 
@@ -523,6 +565,7 @@ for (int row = 0; row < column.length; row++) {
 }
 ```
 
+
 Tako se v ColumnTable objekt shranijo frekvence kombinacij featurjev in
 class labels.
 
@@ -530,6 +573,7 @@ class labels.
 
 Funkcija gre čez vsako vrstico v ArrayListu columnValues in izpiše vrednost
 featurja ter število pojavitev.
+
 
 ```{java} 
     public void display() {
@@ -539,6 +583,7 @@ featurja ter število pojavitev.
         }
     }
 ```
+
 
 # ClassTable class
 
@@ -568,15 +613,18 @@ Konstruktor shrani v classValues unikatne vrednosti v string polju **Y**,
 s pomočjo unique funkcije iz Util razreda, nato pa v counts pa shrani 
 novo int polje velikosti classValues.
 
+
 ```{java} 
 classValues = Util.unique(Y);
 counts = new int[classValues.size()];
 }
 ```
 
+
 Gre čez vsak element v Y in v int **classIndex** shrani indeks od classValue
 v classValues (glej ColumnTable), nato pa poveča count od elementa na mestu
 classIndex v counts.
+
 
 ```{java} 
     for (String classValue : Y) {
@@ -585,4 +633,6 @@ classIndex v counts.
     }
 ```
 
+
 S tem prešteje kolikokrat se vsak class label pojavi v Y polju.
+
