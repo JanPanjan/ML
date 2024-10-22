@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -17,8 +18,28 @@ class NaiveBayes {
         classTable = new ClassTable(Y);
     }
 
-    public String predict(String[][] row) {
-        return null;
+    public String predict(String[] valuesToPredict) {
+        ArrayList<String> classValues = classTable.getClassValues();
+        double mostProbableValue = Double.MIN_VALUE;    
+        String mostProbableClass = "";
+
+        for (String classValue : classValues) {
+            double probability = 1;
+
+            for (int colIndex = 0; colIndex < columnTables.length; colIndex++) {
+                probability *= columnTables[colIndex].getProbability(valuesToPredict[colIndex], classValue);
+            }
+
+            probability *= classTable.getProbability(classValue);
+
+            System.out.println(classValue + " " + probability);
+            if (mostProbableValue < probability) {
+                mostProbableValue = probability;
+                mostProbableClass = classValue;
+            }
+
+        }
+        return mostProbableClass;
     }
 
     public void display() {
@@ -54,6 +75,19 @@ class ColumnTable{
             System.out.println(Arrays.toString(counts[row]));
         }
     }
+
+    public double getProbability(String columnValue, String classValue) {
+        int rowIndex = columnValues.indexOf(columnValue);
+        int colIndex = classValues.indexOf(classValue);
+        int count = counts[rowIndex][colIndex];
+        int sum = 0;
+
+        for (int row = 0; row < columnValues.size(); row++) {
+            sum += counts[row][colIndex];
+        }
+
+        return (double)count / sum;
+    }
 }
 
 class ClassTable{
@@ -68,5 +102,21 @@ class ClassTable{
             int classIndex = classValues.indexOf(classValue);
             counts[classIndex]++;
         }
+    }
+
+    public ArrayList<String> getClassValues() {
+        return classValues;
+    }
+
+    public double getProbability(String classValue) {
+        int index = classValues.indexOf(classValue);
+        int count = counts[index];
+        int sum = 0;
+
+        for (int col = 0; col < classValues.size(); col++) {
+            sum += counts[col];
+        }
+
+        return (double)count / sum;
     }
 }

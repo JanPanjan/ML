@@ -23,5 +23,9 @@ public class Main {
         NaiveBayes nb = new NaiveBayes();
         nb.train(X, Y);
         nb.display();
+
+        String[] toPredict = {"Sunny", "Hot", "High", "False"};
+        String prediction = nb.predict(toPredict);
+        System.out.println("Predicted:" + prediction);
     }
 }

@@ -4,9 +4,6 @@
 standard, ki natančno določa potek analize podatkov s pomočjo podatkovnega
 rudarjenja.
 
-Zagotavlja enoten okvir za smernice in dokumentacijo primerov. Je fleksibilen
-glede na razlike v poslovnih problemih in podatkih.
-
 Je prosto dostopen procesni model, neodvisen od aplikacije/problema ter neodvisen od orodja/
 programa. Osredotočen na poslovne probleme.
 

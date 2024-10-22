@@ -1,5 +1,8 @@
 # Strojno učenje in podatkovno rudarjenje
 
+- [repo](https://github.com/JanPanjan/ML) 
+- [online knijga](https://dataminingbook.info/book_html/) 
+
 Kaj je treba znat:
 
 - GitHub
