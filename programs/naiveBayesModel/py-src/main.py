@@ -20,9 +20,15 @@ data = np.array([
     ["Rainy", "Mild", "High", "True", "No"]
 ])
 
-feature_matrix  = util.remove_column(data, 4)
+feature_matrix = util.remove_column(data, 4)
 response_vector = util.extract_column(data, 4)
 
 nb = naive_bayes.Naive_bayes()
 nb.train(feature_matrix, response_vector)
 nb.display()
+
+to_predict = ["Sunny", "Hot", "High", "False"]
+
+prediction = nb.predict(to_predict, response_vector)
+
+print("Predicted: ", prediction)
