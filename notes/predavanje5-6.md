@@ -18,4 +18,4 @@ glej pdf 6
 - diskretizacija enake širine lahko privede do lukenj med razredi, zato naredimo
 diskretizacijo enake višine/frekvence
 - najdi formulo za višino
-- 
+

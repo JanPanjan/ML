@@ -10,10 +10,12 @@ def remove_column(data, col_to_remove):
 
     return new_data
 
+
 @staticmethod
 def extract_column(data, col_to_extract):
     # za vsak row iz data vrne element na indeksu col_to_extract
     return [row[col_to_extract] for row in data]
+
 
 @staticmethod
 def unique(cols):

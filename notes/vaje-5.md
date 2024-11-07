@@ -1,0 +1,6 @@
+- 1.5iqr za osamelce
+- kvartili, percentinil, mere centralne tendence
+- glej predavanja kako najt 25 percentil
+- glej excel file
+- ni ifelse, samo if - if(neki, true, false) - to bypasas tako, da pišeš if(pogoj, true, if(pogoj2, true false))
+- za 1.5IQR potrebujemo zgornji in spodnji threshold
