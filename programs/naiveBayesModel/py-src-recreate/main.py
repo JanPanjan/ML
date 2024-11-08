@@ -83,8 +83,4 @@ fm_trans = np.array(f_mat).T
 
 ft = FrequencyTable(f_mat=fm_trans, col_names=fm_col_names, c_vec=c_vec)
 
-# util.pretty_print(ft)
-# util.pretty_print(ft.uq_val_table, "Unique values of attributes")
-# util.pretty_print(ft.val_id_table, "Indexes in feature matrix of unique values")
-print("tvoja mama")
 util.pretty_print_dict(ft.table, "Class value frequencies")
