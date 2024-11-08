@@ -2,7 +2,6 @@ import numpy as np
 
 
 class FrequencyTable:
-
     """
     vsak atribut ima svoj stolpec. to bo dictionary, nekako tako:
     Frequency_table = {
@@ -18,7 +17,7 @@ class FrequencyTable:
                       }
     """
 
-    # ko ustvarimo instanco FrequencyTable, se bo naredila celotna tabela
+    # ko ustvarimo instanco Table, se bo naredila celotna tabela
     # iz feature matrix in class vector
 
     def __init__(self, f_mat, col_names, c_vec) -> None:
@@ -102,14 +101,21 @@ class FrequencyTable:
                 # posodobimo cls_freq_t na mestu c_vec[x]
                 cls_freq_t[c_vec[x]] += 1
 
-            # freq table dodamo na pravo mesto v FrequencyTable
+            # freq table dodamo na pravo mesto v Table
             # to pomeni, da pospravimo na pravi atribut, na pravi
             # unique value
             # self.table[atribut][uq_val]
             # kako dobim atribut....
 
-        # nevem ce bo to v redu
-        print("val id table\n", self.val_id_table)
-        print("uq val table\n", self.uq_val_table)
-        print("table\n", self.table)
-        # print(self.table)
+        for atr in self.table.keys():
+            for id, uq_val in enumerate(self.table[atr].keys()):
+                cls_freq_t = {"Yes": 0, "No": 0}
+
+                # za vsak uq value preštejemo frekvence
+                for val in self.val_id_table[uq_val]:
+                    cls_freq_t[c_vec[val]] += 1
+
+                # frekvence zapakiramo na pravo mesto
+                # atribut: uq value = frekvence
+                self.table[atr][uq_val] = cls_freq_t
+

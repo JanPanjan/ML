@@ -18,6 +18,13 @@ def ext_col(data, col_to_ext) -> list:
 
 # ni pretty, ampak za zdaj je tko
 @staticmethod
-def pretty_print(data):
-    [print(row) for row in data]
+def pretty_print_dict(data, main):
+    print("Table: ", main)
+    eqs = "=" * (12 + len(main))
+    print(f"{eqs}")
+    for atr in data.items():
+        spaces = "-" * (10 - len(atr[0]))
+        print(atr[0], f"{spaces}-----------------------")
+        for uq_val in data[atr[0]].items():
+            print(f"  ", f"{uq_val[0]}:", " " * (8 - len(uq_val[0]))  , f"{uq_val[1]}")
 

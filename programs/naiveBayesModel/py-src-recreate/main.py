@@ -2,7 +2,6 @@ import numpy as np
 import util
 from frequency_table import FrequencyTable
 
-
 # moji podatki
 # zadnji stolpec je class attribute
 data = np.array([
@@ -33,11 +32,6 @@ c_vec = util.ext_col(data, 4)
 col_names = ["outlook", "temperature", "humidity", "windy", "play"]
 fm_col_names = col_names[:len(col_names)-1]
 
-# print("================", "feature matrix:", "================")
-# util.pretty_print(f_mat)
-# print("================", "class vector:", "================")
-# util.pretty_print(c_vec)
-
 """
 ----- cilj 2 -----
 moram naredit frequency table s frekvencami yes no za vsak atribut
@@ -49,17 +43,26 @@ tako:
           overcast: [4, 0]
 
 vsak atribut ima svoj stolpec. to bo dictionary, nekako tako:
-Frequency_table = {
-                      outlook: {
-                          sunny: [2,3],
-                          rainy: [3,2],
-                          overcast: [4,0]
-                      },
-                      temperature: {
-                          ...
-                          ...
-                      }
-                  }
+        Frequency_table = {
+            outlook: {
+                sunny: {
+                    yes: 2,
+                    no: 3
+                },
+                rainy: {
+                    yes: 3,
+                    no: 2
+                },
+                overcast: {
+                    yes: 4,
+                    no: 0
+                }
+            },
+            temperature: {
+                ...
+                ...
+            }
+        }
 
 vrednosti sunny: [2,3] pomeni, da imata dva sunny yes in trije sunny no
 kaj moramo naredit torej:
@@ -79,3 +82,9 @@ Frequency_table.
 fm_trans = np.array(f_mat).T
 
 ft = FrequencyTable(f_mat=fm_trans, col_names=fm_col_names, c_vec=c_vec)
+
+# util.pretty_print(ft)
+# util.pretty_print(ft.uq_val_table, "Unique values of attributes")
+# util.pretty_print(ft.val_id_table, "Indexes in feature matrix of unique values")
+print("tvoja mama")
+util.pretty_print_dict(ft.table, "Class value frequencies")
