@@ -100,28 +100,44 @@ class FrequencyTable:
             atribut: uq value = frekvence
             self.table[atribut][uq_val] 
 
-        za fr_table moram deliti class value s številom njenih ponovitev
-        v c_vec in prišteti 1
+        fr_table vsebuje uravnovešene vrednosti frekvenc
         """
 
-        count_yes = c_vec.count("Yes")
-        count_no = c_vec.count("No")
-        cv_len = len(c_vec)
+
+        def adjust_frequencies(freq_table: dict) -> dict:
+            count_yes = c_vec.count("Yes")
+            count_no = c_vec.count("No")
+
+            return {
+                "Yes": round(1 + (freq_table["Yes"] / count_yes), 2),
+                "No": round(1 + (freq_table["No"] / count_no), 2)
+            }
+
 
         for atr in self.table.keys():
             for id, uq_val in enumerate(self.table[atr].keys()):
-                cls_freq_t = {"Yes": 0, "No": 0}
+                freq_t = {"Yes": 0, "No": 0}
 
                 # ----- table -----
                 for val in self.val_id_table[uq_val]:
-                    cls_freq_t[c_vec[val]] += 1
+                    freq_t[c_vec[val]] += 1
 
-                self.table[atr][uq_val] = cls_freq_t
+                self.table[atr][uq_val] = freq_t
 
                 # ----- fr_table -----
-                adjusted_frequencies = {
-                    "Yes": 1 + (cls_freq_t["Yes"] / count_yes),
-                    "No": 1 + (cls_freq_t["No"] / count_no)
-                }
+                self.fr_table[atr][uq_val] = adjust_frequencies(freq_t)
 
-                self.fr_table[atr][uq_val] = adjusted_frequencies
+        """ potrebujem še frekvence za class values, ki jih bom hranil posebej,
+        da ne bo kake zmede. 
+
+        grem čez c_vec in enako preštejem vrednosti za yes in no in nato še
+        dobim deleže """
+
+        self.cls_table = {"Yes": 0.0, "No": 0.0}
+
+        for cls_val in c_vec:
+            self.cls_table[cls_val] += 1
+
+        self.cls_table["Yes"] = round(self.cls_table["Yes"] / len(c_vec), 2)
+        self.cls_table["No"]  = round(self.cls_table["Yes"] / len(c_vec), 2)
+
