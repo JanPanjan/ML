@@ -2,8 +2,7 @@ import numpy as np
 import util
 from frequency_table import FrequencyTable
 
-# moji podatki
-# zadnji stolpec je class attribute
+""" moji podatki. zadnji stolpec je class attribute """ 
 data = np.array([
     ["Sunny", "Hot", "High", "False", "No"],
     ["Sunny", "Hot", "High", "True", "No"],
@@ -21,20 +20,17 @@ data = np.array([
     ["Rainy", "Mild", "High", "True", "No"]
 ])
 
-"""
------ cilj 1 -----
+""" ----- cilj 1 -----
 hočem posebej feature matrix (tabelo atributov brez class) in
 class vector (vektor ali 1D array class vrednosti)
-ustvarim funkciji, ki bosta naredili subsets mojih tabel
-"""
+ustvarim funkciji, ki bosta naredili subsets mojih tabel """
 f_mat = util.rem_col(data, 4)
 c_vec = util.ext_col(data, 4)
 
 col_names = ["outlook", "temperature", "humidity", "windy", "play"]
 fm_col_names = col_names[:len(col_names)-1]
 
-"""
------ cilj 2 -----
+""" ----- cilj 2 -----
 moram naredit frequency table s frekvencami yes no za vsak atribut
 s tem namenom bom ustvaril nov razred Frequency_table, ki bo izgledal
 tako:
@@ -68,17 +64,32 @@ hočemo pa, da je tak:
       high, mild ...
       false, true ...
 potem lahko preprosto loopamo in štejemo count yes in no,
-ker bodo stolpci enake velikosti kot class vector
-"""
+ker bodo stolpci enake velikosti kot class vector """
 
 fm_trans = np.array(f_mat).T  # T transponira matriko
 ft = FrequencyTable(fm_trans, fm_col_names, c_vec)
 
 util.pretty_print_dict(ft.table, "Class value frequencies")
+util.pretty_print_dict(ft.fr_table, "Class value frequencies (float)")
 
-"""
------ cilj 3 -----
+""" frekvenčno tabelo imamo, potrebujemo še (mogoče) tabelo, kjer bodo deleži
+frekvenc. kaj to pomeni:
+
+	obstaja 9 "yes" in 5 "no". "sunny" ima 2x "yes" in 3x "no". "sunny" 
+    pripomore h deležu od "yes" 2/9 in h "no" 2/5. prav tako imamo deleže
+    za class atribut. "yes" je 9/14 in "no" 5/14.
+
+v FrequencyTable razredu ustvarim še eno tabelo z deleži frekvenc vrednosti (tudi 
+class), preko katere bom potem predictal class vrednosti v NaiveBayes razredu.  """
+
+
+
+
+
+
+
+
+""" ----- cilj 3 -----
 Zdaj mam frekvence, moram ustvariti model, ki bo predictal vrednosti.
 Ustvarim NaiveBayes class, kjer bo naš model.
-Najprej je treba model natrenirati s podatki
-"""
+Najprej je treba model natrenirati s podatki """

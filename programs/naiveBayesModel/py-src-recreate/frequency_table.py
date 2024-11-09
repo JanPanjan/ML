@@ -2,9 +2,8 @@ import numpy as np
 
 
 class FrequencyTable:
-    """
-    vsak atribut ima svoj stolpec. to bo dictionary, nekako tako:
-        Frequency_table = {
+    """ vsak atribut ima svoj stolpec. to bo dictionary, nekako tako:
+        table = {
             outlook: {
                 sunny: { yes: 2, no: 3 },
                 rainy: { yes: 3, no: 2 },
@@ -15,20 +14,43 @@ class FrequencyTable:
                 ...
             }
         }
-    ko ustvarimo instanco Table, se bo naredila celotna tabela
-    iz feature matrix in class vector
+
+    istočasno se bo naredila še frekvenčna tabela deležev vrednosti:
+        fr_table = {
+            outlook: {
+                sunny: { yes: 1+(2/9), no: 1+(3/5) },
+                rainy: { yes: 1+(3/9), no: 1+(2/5) },
+                overcast: { yes: 1+(4/9), no: 1+(0/5) }
+            },
+            temperature: {
+                ...
+                ...
+            }
+        }
+
+    9 je število "yes" in 5 število "no" iz c_vec. prav tako moram vsem
+    dodati 1, ker se npr. pri [outlook = overcast | no] pojavi 0 in bo
+    motilo izračun verjetij.
+
+        ***---------------------------------------------------------***
+    ***-za zdaj bom pustil dve tabeli, drugače potrebujem samo to drugo-***
+        ***---------------------------------------------------------***
+
+    ko ustvarimo instanco Table, se bodo naredile vse tabele
+    iz feature matrix, class vector in col_names
     """
+
     def __init__(self, f_mat, col_names, c_vec) -> None:
         self.table = {atr: {} for atr in col_names}
+        self.fr_table = {atr: {} for atr in col_names}
 
-        """
-        v atr ustvarimo še dicts za vsako vrednost iz col_names
+        """ v atr ustvarimo še dicts za vsako vrednost iz col_names
             self.table['outlook']['sunny'] = {}
             self.table['outlook']['rainy'] = {}
             ...
         moram dobit unikatne vrednosti vsakega atributa
-        to dobimo s set funkcijo
-        """
+        to dobimo s set funkcijo """
+
         self.uq_val_table = {f"{col_names[atr]}": list(set(f_mat[atr])) for atr in range(len(f_mat))}
 
         for x in range(len(col_names)):
@@ -37,9 +59,9 @@ class FrequencyTable:
 
             for uq_val in cur_atr:
                 self.table[cur_col][uq_val] = {}
+                self.fr_table[cur_col][uq_val] = {}
 
-        """
-        prav tako moram dobit tabelo indeksov teh unikatnih vrednosti
+        """ prav tako moram dobit tabelo indeksov teh unikatnih vrednosti
             np.where(f_mat[0] == "sunny")[0]
             np.where(f_mat[0] == "rainy")[0]
             np.where(f_mat[0] == "overcast")[0]
@@ -49,8 +71,8 @@ class FrequencyTable:
         e.g. za sunny vrne [0,1,7,8,10] in [0,0,0,0,0], ker se vse vrednosti
         sunny v f_mat pojavijo v prvem stolpcu
 
-        ker hočemo indekse atributu, vzamemo prvi array
-        """
+        ker hočemo indekse atributu, vzamemo prvi array """
+
         self.val_id_table = {}
 
         for id, vals in enumerate(self.uq_val_table.values()):
@@ -58,8 +80,7 @@ class FrequencyTable:
                 ids = np.where(f_mat[id] == uq_val)[0]
                 self.val_id_table[uq_val] = list(ids)
 
-        """
-        gremo čez vsako vrstico po vrsti, da so colnames v
+        """ gremo čez vsako vrstico po vrsti, da so colnames v
         pravem redu dostopani
 
         val je string trenutne unikatne vrednosti
@@ -74,17 +95,33 @@ class FrequencyTable:
         e.g. sunny se pojavi na mestih 0,1,7,8,10 - na mestih
         0,1,7 ima no ter na 8,10 ima yes
 
-        freq table dodamo na pravo mesto v Table - to pomeni, da 
+        cls_freq_table dodamo na pravo mesto v Table - to pomeni, da 
         pospravimo na pravi atribut, na pravi unique value
             atribut: uq value = frekvence
-            self.table[atribut][uq_val]
+            self.table[atribut][uq_val] 
+
+        za fr_table moram deliti class value s številom njenih ponovitev
+        v c_vec in prišteti 1
         """
+
+        count_yes = c_vec.count("Yes")
+        count_no = c_vec.count("No")
+        cv_len = len(c_vec)
+
         for atr in self.table.keys():
             for id, uq_val in enumerate(self.table[atr].keys()):
                 cls_freq_t = {"Yes": 0, "No": 0}
 
-                # za vsak unique value preštejemo frekvence
+                # ----- table -----
                 for val in self.val_id_table[uq_val]:
                     cls_freq_t[c_vec[val]] += 1
 
                 self.table[atr][uq_val] = cls_freq_t
+
+                # ----- fr_table -----
+                adjusted_frequencies = {
+                    "Yes": 1 + (cls_freq_t["Yes"] / count_yes),
+                    "No": 1 + (cls_freq_t["No"] / count_no)
+                }
+
+                self.fr_table[atr][uq_val] = adjusted_frequencies

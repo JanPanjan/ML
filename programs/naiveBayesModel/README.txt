@@ -53,7 +53,7 @@ Naivni Bayes, ker model predpostavlja, da so verjetnosti atributov neodvisne
 med seboj; zaradi te predpostavke, razdelimo dejstva E na dele:
 
 	P[H|E] = P[E1|H] × P[E2|H] × P[E3|H] × ... × P[En|H] × P[H]
-		 --------------------------------------------------
+		     --------------------------------------------------
 			                 P[E]
 
 	outlook, temp, humidity, windy, play
@@ -63,12 +63,27 @@ med seboj; zaradi te predpostavke, razdelimo dejstva E na dele:
 	    |
 	    |
 	    v
-	P["yes"|E] = P[outlook = "sunny" |"yes"] ×
- 		     P[temperature = "cool" |"yes"] ×
-		     P[humidity = "high" |"yes"] ×
-		     P[windy = "true" |"yes"] ×
-		     P["yes"] / P[E]
+	P["yes"|E] = P[outlook = "sunny" | "yes"] ×
+				 P[temperature = "cool" | "yes"] ×
+				 P[humidity = "high" | "yes"] ×
+				 P[windy = "true" | "yes"] ×
+				 P["yes"] / P[E]
 
-	           = 2/9 × 3/9 × 3/9 × 3/9 × 9/14
-		     ----------------------------
-		                 P[E]
+				= 2/9 × 3/9 × 3/9 × 3/9 × 9/14
+				  ----------------------------
+						      P[E]
+
+----- NIČELNE FREKVENCE -----
+
+Verjetnost bo enaka 0, če ima neka določena vrednost frekvenco 0 za nek
+class value (npr. P[humidity = high | yes] = 0). Zaradi tega vsem
+frekvencam v tabeli frekvenc dodamo 1 - verjetnosti ne bodo nikoli 0.
+
+Včasih je boljše dodati kako drugo vrednost kot 1, saj se natančnost manjša
+glede na velikost verjetnosti al nekaj takega. Ni nujno da so uteži enako,
+le njihova vsota mora biti vedno enaka 1 (saj delamo z verjetnostjo).
+
+----- MANJKAJOČE VREDNOSTI -----
+
+Teh ne upoštevamo pri izračunu frekvenc v tabeli frekvenc in pri klasifikaciji
+ne upeštevamo za izračun verjetij.
