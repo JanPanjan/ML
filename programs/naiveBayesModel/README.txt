@@ -41,7 +41,7 @@ dejstva (a posteriori).
 
 	P[H|E] = P[E|H] × P[H]
 	         -------------
-			     P[E]
+	              P[E]
 
 Hočemo izvedeti *kakšna je verjetnost razreda (class) pri poznanih verjetnostih
 vrednosti ostalih atributov primera (sunny, cool,...)*.
@@ -53,22 +53,22 @@ Naivni Bayes, ker model predpostavlja, da so verjetnosti atributov neodvisne
 med seboj; zaradi te predpostavke, razdelimo dejstva E na dele:
 
 	P[H|E] = P[E1|H] × P[E2|H] × P[E3|H] × ... × P[En|H] × P[H]
-			 --------------------------------------------------
-			                      P[E]
+		 --------------------------------------------------
+			                 P[E]
 
 	outlook, temp, humidity, windy, play
 	sunny, 	 cool, high,     true,  (?)  <=== dejstva E
 
 	verjetnost razreda yes
 	    |
-		|
-		v
-	P["yes"|E] = P[outlook     = "sunny" |"yes"] ×
- 				 P[temperature = "cool"  |"yes"] ×
-				 P[humidity    = "high"  |"yes"] ×
-				 P[windy       = "true"  |"yes"] ×
-				 P["yes"] / P[E]
+	    |
+	    v
+	P["yes"|E] = P[outlook = "sunny" |"yes"] ×
+ 		     P[temperature = "cool" |"yes"] ×
+		     P[humidity = "high" |"yes"] ×
+		     P[windy = "true" |"yes"] ×
+		     P["yes"] / P[E]
 
-			   = 2/9 × 3/9 × 3/9 × 3/9 × 9/14
-			     ----------------------------
-				            P[E]
+	           = 2/9 × 3/9 × 3/9 × 3/9 × 9/14
+		     ----------------------------
+		                 P[E]
