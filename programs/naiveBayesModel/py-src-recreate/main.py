@@ -88,8 +88,7 @@ class), preko katere bom potem predictal class vrednosti v NaiveBayes razredu.  
 
 util.pretty_print_dict(ft.fr_table, "Frekvenčna tabela vrednosti (deleži)")
 print("\nDeleža 'yes' in 'no' v class vektorju")
-print("  ", ft.cls_table)
-
+[print("  ", val) for val in ft.cls_table.items()]
 
 
 """ ----- cilj 3 -----

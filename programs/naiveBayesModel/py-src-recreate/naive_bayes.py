@@ -31,57 +31,57 @@ class NaiveBayes:
         P(no)  = P(podatki|no)  / (P(podatki|yes) + P(podatki|no)) 
     """
     def predict(self, input_vec):
-        p_yes = 1.0
-        p_no  = 1.0
+        self.p_yes = 1.0
+        self.p_no  = 1.0
+
+        self.msg_vals = {"Yes": [], "No": []}
+        self.msg_nums = {"Yes": [], "No": []}
 
         # calculate likelihoods
-        print("\n=== calculating likelihoods")
         for x in range(len(input_vec)):
             cur_atr = self.feature_col_names[x]
             cur_val = input_vec[x]
 
-            print(f"cur atr: {cur_atr}\ncur val: {cur_val}")
+            self.msg_vals["Yes"].append(cur_val)
+            self.msg_vals["No"].append(cur_val)
 
-            y = self.ft.fr_table[cur_atr][cur_val]["Yes"]
-            n = self.ft.fr_table[cur_atr][cur_val]["No"]
+            self.msg_nums["Yes"].append(self.ft.fr_table[cur_atr][cur_val]["Yes"])
+            self.msg_nums["No"].append(self.ft.fr_table[cur_atr][cur_val]["No"])
 
-            print(f"cur val freq (yes): {y}")
-            print(f"cur val freq (no): {n}")
+            self.p_yes *= self.ft.fr_table[cur_atr][cur_val]["Yes"]
+            self.p_no  *= self.ft.fr_table[cur_atr][cur_val]["No"]
 
-            p_yes *= self.ft.fr_table[cur_atr][cur_val]["Yes"]
-            p_no  *= self.ft.fr_table[cur_atr][cur_val]["No"]
 
-        print("\n---raw calc:")
-        print(p_yes)
-        print(p_no)
-        print("------------")
+        self.msg_vals["Yes"].append("class")
+        self.msg_vals["No"].append("class")
+        self.msg_nums["Yes"].append(self.ft.cls_table["Yes"])
+        self.msg_nums["No"].append(self.ft.cls_table["No"])
 
         # multiply z yes in no frekvenco
-        print(self.ft.cls_table["Yes"])
-        print(self.ft.cls_table["No"])
-
-        p_yes *= self.ft.cls_table["Yes"]
-        p_no  *= self.ft.cls_table["No"]
-
-        print(p_yes)
-        print(p_no)
+        self.p_yes *= self.ft.cls_table["Yes"]
+        self.p_no  *= self.ft.cls_table["No"]
 
         # normalize to get probability
-        p_sum = p_yes + p_no
-        p_yes = p_yes / p_sum
-        p_no  = p_no  / p_sum
+        p_sum = self.p_yes + self.p_no
+        self.p_yes = self.p_yes / p_sum
+        self.p_no  = self.p_no  / p_sum
 
-        print("after normalized")
-        print(p_yes)
-        print(p_no)
-        print("sum :", p_yes + p_no)
-
-        self.probabilities = {"Yes": p_yes, "No": p_no}
+        self.probabilities = {"Yes": self.p_yes, "No": self.p_no}
         return self.probabilities
 
     
     def display_result(self, probabilities):
-        print("\nVerjetnosti za class vrednosti")
+        print("\n=== likelihood for yes:", self.p_yes)
+        for x in range(len(self.msg_vals["Yes"])):
+            spc = " " * (6 - len(self.msg_vals["Yes"][x]))
+            print("  ", self.msg_vals["Yes"][x], spc, self.msg_nums["Yes"][x])
+
+        print("\n=== likelihood for no:", self.p_no)
+        for x in range(len(self.msg_vals["No"])):
+            spc = " " * (6 - len(self.msg_vals["No"][x]))
+            print("  ", self.msg_vals["No"][x], spc, self.msg_nums["No"][x])
+
+        print("\nPredictions:")
         print("==============================")
         for x in probabilities.items():
             spc = " " * (3 - len(x[0]))

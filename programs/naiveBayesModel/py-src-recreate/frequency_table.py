@@ -109,8 +109,8 @@ class FrequencyTable:
             count_no = c_vec.count("No")
 
             return {
-                "Yes": round(1 + (freq_table["Yes"] / count_yes), 2),
-                "No": round(1 + (freq_table["No"] / count_no), 2)
+                "Yes": (0.1 + freq_table["Yes"]) / (count_yes + 0.1),
+                "No": (0.1 + freq_table["No"]) / (count_no + 0.1)
             }
 
 
@@ -138,6 +138,6 @@ class FrequencyTable:
         for cls_val in c_vec:
             self.cls_table[cls_val] += 1
 
-        self.cls_table["Yes"] = round(self.cls_table["Yes"] / len(c_vec), 2)
-        self.cls_table["No"]  = round(self.cls_table["Yes"] / len(c_vec), 2)
+        self.cls_table["Yes"] = self.cls_table["Yes"] / len(c_vec)
+        self.cls_table["No"]  = self.cls_table["No"] / len(c_vec)
 
