@@ -1,0 +1,4 @@
+1. figure out python inheritance
+2. fix model za multiple class values (optional)
+3. add data from file functionality
+4. explore visualisation options (plots, tables be it command line or not)
