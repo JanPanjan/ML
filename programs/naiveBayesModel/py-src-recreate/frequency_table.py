@@ -102,8 +102,6 @@ class FrequencyTable:
 
         fr_table vsebuje uravnovešene vrednosti frekvenc
         """
-
-
         def adjust_frequencies(freq_table: dict) -> dict:
             count_yes = c_vec.count("Yes")
             count_no = c_vec.count("No")
@@ -133,11 +131,12 @@ class FrequencyTable:
         grem čez c_vec in enako preštejem vrednosti za yes in no in nato še
         dobim deleže """
 
-        self.cls_table = {"Yes": 0.0, "No": 0.0}
+        self.cls_table_adjusted = {"Yes": 0.0, "No": 0.0}
+        self.cls_table = {"Yes": 0, "No": 0}
 
         for cls_val in c_vec:
             self.cls_table[cls_val] += 1
 
-        self.cls_table["Yes"] = self.cls_table["Yes"] / len(c_vec)
-        self.cls_table["No"]  = self.cls_table["No"] / len(c_vec)
+        self.cls_table_adjusted["Yes"] = self.cls_table["Yes"] / len(c_vec)
+        self.cls_table_adjusted["No"]  = self.cls_table["No"] / len(c_vec)
 

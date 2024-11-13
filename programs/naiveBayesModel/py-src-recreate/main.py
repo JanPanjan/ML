@@ -3,8 +3,7 @@ import util
 from frequency_table import FrequencyTable
 from naive_bayes import NaiveBayes
 
-
-""" moji podatki. zadnji stolpec je class attribute """ 
+# moji podatki. zadnji stolpec je class attribute
 data = np.array([
     ["Sunny", "Hot", "High", "False", "No"],
     ["Sunny", "Hot", "High", "True", "No"],
@@ -22,20 +21,50 @@ data = np.array([
     ["Rainy", "Mild", "High", "True", "No"]
 ])
 
+def main():
+    """ Model bo vzel vrstico (en occurence), iz frekvenčne tabele dobil frekvenčne deleže
+    vseh vrednosti, izračunal verjetnosti in vrnil verjetnost za "yes" in "no". 
 
-""" ----- cilj 1 -----
+    delaj se, da je zgornji data tvoj training dataset. 
+
+    1. najprej model natreniramo (dobimo frekvence in verjetnosti),
+    2. nato predictamo nekaj iz novih podatkov (glej case_1). 
+
+    e.g. java:
+        String[][] X = Util.removeColumn(data, 4);
+        String[] Y = Util.extractColumn(data, 4);
+
+        NaiveBayes nb = new NaiveBayes();
+        nb.train(X, Y);
+        nb.display();
+
+        String[] toPredict = { "Sunny", "Hot", "High", "False" };
+        String prediction = nb.predict(toPredict); """
+
+    col_names = ["outlook", "temperature", "humidity", "windy", "play"]
+
+    X = util.rem_col(data, 4)
+    Y = util.ext_col(data, 4)
+
+    nb = NaiveBayes()
+    nb.train(X, Y, col_names)
+    nb.display.table()
+
+    case_1 = ["Sunny", "Hot", "Normal", "False"]
+    prediction_1 = nb.predict(case_1)
+    nb.display.probabilities(prediction_1)
+    nb.display.prediction(prediction_1)
+
+if __name__ == "__main__":
+    main()
+
+
+""" CILJ 1 -----
 hočem posebej feature matrix (tabelo atributov brez class) in
 class vector (vektor ali 1D array class vrednosti)
-ustvarim funkciji, ki bosta naredili subsets mojih tabel """
-f_mat = util.rem_col(data, 4)
-c_vec = util.ext_col(data, 4)
+ustvarim funkciji, ki bosta naredili subsets mojih tabel.
 
-col_names = ["outlook", "temperature", "humidity", "windy", "play"]
-fm_col_names = col_names[:len(col_names)-1]
-
-
-
-""" ----- cilj 2 -----
+CILJ 2 -----
 moram naredit frequency table s frekvencami yes no za vsak atribut
 s tem namenom bom ustvaril nov razred Frequency_table, ki bo izgledal
 tako:
@@ -69,29 +98,19 @@ hočemo pa, da je tak:
       high, mild ...
       false, true ...
 potem lahko preprosto loopamo in štejemo count yes in no,
-ker bodo stolpci enake velikosti kot class vector """
+ker bodo stolpci enake velikosti kot class vector.
 
-fm_trans = np.array(f_mat).T  # T transponira matriko
-ft = FrequencyTable(fm_trans, fm_col_names, c_vec)
-
-util.pretty_print_dict(ft.table, "Frekvenčna tabela vrednosti")
-
-""" frekvenčno tabelo imamo, potrebujemo še (mogoče) tabelo, kjer bodo deleži
+frekvenčno tabelo imamo, potrebujemo še (mogoče) tabelo, kjer bodo deleži
 frekvenc. kaj to pomeni:
 
-	obstaja 9 "yes" in 5 "no". "sunny" ima 2x "yes" in 3x "no". "sunny" 
+        obstaja 9 "yes" in 5 "no". "sunny" ima 2x "yes" in 3x "no". "sunny" 
     pripomore h deležu od "yes" 2/9 in h "no" 2/5. prav tako imamo deleže
     za class atribut. "yes" je 9/14 in "no" 5/14.
 
 v FrequencyTable razredu ustvarim še eno tabelo z deleži frekvenc vrednosti (tudi 
-class), preko katere bom potem predictal class vrednosti v NaiveBayes razredu.  """
+class), preko katere bom potem predictal class vrednosti v NaiveBayes razredu.
 
-util.pretty_print_dict(ft.fr_table, "Frekvenčna tabela vrednosti (deleži)")
-print("\nDeleža 'yes' in 'no' v class vektorju")
-[print("  ", val) for val in ft.cls_table.items()]
-
-
-""" ----- cilj 3 -----
+CILJ 3 -----
 Zdaj mam frekvence, moram ustvariti model, ki bo predictal vrednosti.
 To bo class NaiveBayes. Mislim, da vse kar moramo naredit right now je to,
 da ustvarim frequency table v njem in iz frekvenc izračunam verjetnost
@@ -104,9 +123,4 @@ za class values glede na Bayes-ovo formulo.
     --- --- --- disclaimer --- --- --- --- --- --- --- --- --- --- --- --- ---
 
 Model bo vzel vrstico (en occurence), iz frekvenčne tabele dobil frekvenčne deleže
-vseh vrednosti, izračunal verjetnosti in vrnil verjetnost za "yes" in "no".
-"""
-
-nb = NaiveBayes(data, col_names)
-case4 = nb.predict(["Sunny", "Hot", "Normal", "False"])
-nb.display_result(case4)
+vseh vrednosti, izračunal verjetnosti in vrnil verjetnost za "yes" in "no". """
