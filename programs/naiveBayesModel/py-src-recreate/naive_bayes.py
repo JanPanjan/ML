@@ -7,30 +7,14 @@ class NaiveBayes:
     def __init__(self) -> None:
         self.display = Display(self)
 
+
     def train(self, X, Y, col_names) -> None:
         f_mat = array(X).T
         c_vec = Y
         self.feature_col_names = col_names[:-1]
         self.ft = FrequencyTable(f_mat, self.feature_col_names, c_vec)
 
-    """ Ko mislimo predictat nekaj, to pomeni, da mu 
-    podamo podatke o outlook, temperature, humidity in windy,
-    ter hočemo predictat kaka bo play vrednost (class). 
 
-    prediction naredimo iz izračunanih frekvenc. e.g. dobimo
-    vrstico "Sunny", "Hot", "High", "True". Dobimo frekvenco
-    za vsako vrednost in jih množimo skupaj, da dobimo verjetje
-    (likelihood). 
-
-        yes = 2/9 × 3/9 × 3/9 × 3/9 × 9/14 = 0,0053
-        no  = 3/5 × 1/5 × 4/5 × 3/5 × 5/14 = 0,0206
-
-    V verjetnost pretvorimo tako, da delimo verjetje za class 
-    z vsoto class verjetjih.
-
-        P(yes) = P(podatki|yes) / (P(podatki|yes) + P(podatki|no)) 
-        P(no)  = P(podatki|no)  / (P(podatki|yes) + P(podatki|no)) 
-    """
     def predict(self, case):
         # spremenljivki za verjetnost
         self.p_yes = 1.0

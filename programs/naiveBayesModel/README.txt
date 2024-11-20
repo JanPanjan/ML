@@ -2,8 +2,7 @@
 ----- TABELA DELEŽEV -----
 ==========================
 
-frekvenčno tabelo imamo, potrebujemo še (mogoče) tabelo, kjer bodo deleži
-frekvenc. kaj to pomeni:
+ima frekvenčno tabelo in tabelo, kjer so deleži frekvenc. kaj to pomeni:
 
 	obstaja 9 "yes" in 5 "no". "sunny" ima 2x "yes" in 3x "no". "sunny" pripomore h
 	deležu od "yes" 2/9 in h "no" 2/5. prav tako imamo deleže za class atribut.
@@ -13,19 +12,19 @@ frekvenc. kaj to pomeni:
 ----- NAPOVEDOVANJE -----
 =========================
 
-temelji na teh deležih. primer:
+temelji na deležih vrednosti. primer:
 
 	outlook, temp, humidity, windy, play
 	sunny, 	 cool, high,     true,  (?)
 
-	vrednost "yes" in "no" napovemo preko deležev. deleže za vsako vrednost
-	množimo med sabo, da dobimo *verjetje* (likelyhood) razreda:
+	vrednost "yes" in "no" napove preko deležev. deleže za vsako vrednost
+	množi med sabo, da dobi *verjetje* (likelyhood) razreda:
 
 		  sunny cool  high  true  yes
 	yes = 2/9 × 3/9 × 3/9 × 3/9 × 9/14 = 0,0053
 	no  = 3/5 × 1/5 × 4/5 × 3/5 × 5/14 = 0,0206
 
-	v verjetnost pretvorimo tako, da normaliziramo vrednosti z enačbo:
+	v verjetnost pretvori tako, da normalizira vrednosti z enačbo:
 
 		verjetnost(yes) = verjetje_yes / (verjetje_yes + verjetje_no)
 		P(yes) =          0,0053       / (0,0053       + 0,0206) = 0,205
@@ -77,13 +76,14 @@ med seboj; zaradi te predpostavke, razdelimo dejstva E na dele:
 
 Verjetnost bo enaka 0, če ima neka določena vrednost frekvenco 0 za nek
 class value (npr. P[humidity = high | yes] = 0). Zaradi tega vsem
-frekvencam v tabeli frekvenc dodamo 1 - verjetnosti ne bodo nikoli 0.
+frekvencam v tabeli frekvenc doda 1 - verjetnosti ne bodo nikoli 0.
 
 Včasih je boljše dodati kako drugo vrednost kot 1, saj se natančnost manjša
-glede na velikost verjetnosti al nekaj takega. Ni nujno da so uteži enako,
-le njihova vsota mora biti vedno enaka 1 (saj delamo z verjetnostjo).
+glede na velikost verjetnosti AL NEKAJ TAKEGA (do not quote me on this). 
+Ni nujno da so uteži enako, le njihova vsota mora biti vedno enaka 1 (saj 
+delamo z verjetnostjo).
 
 ----- MANJKAJOČE VREDNOSTI -----
 
-Teh ne upoštevamo pri izračunu frekvenc v tabeli frekvenc in pri klasifikaciji
-ne upeštevamo za izračun verjetij.
+Teh ne upošteva pri izračunu frekvenc v tabeli frekvenc in pri klasifikaciji
+ne upešteva za izračun verjetij.
