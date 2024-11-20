@@ -1,4 +1,4 @@
-# ustvarimo novi array iz vseh razen col_to_rem
+# ustvari novi array iz vseh razen col_to_rem
 @staticmethod
 def rem_col(data, *col_to_rem) -> list:
     new_ar = []
@@ -9,6 +9,10 @@ def rem_col(data, *col_to_rem) -> list:
 
     return new_ar
 
+# ustvari novi array brez podane vrstice
+@staticmethod
+def rem_row(data, row_to_rem):
+    return [data[row] for row in range(len(data)) if row != row_to_rem]
 
 # zgradi list iz col_to_ext stolpcev iz vseh row
 @staticmethod

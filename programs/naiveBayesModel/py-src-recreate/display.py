@@ -19,7 +19,14 @@ class Display:
 
 
     def fr_table(self):
-        pass
+        print("\n")
+        print("Table: verjetja")
+        print("================")
+        for atr in self.nb.ft.fr_table.items():
+            spaces = "-" * (11 - len(atr[0]))
+            print(atr[0], f"{spaces}-----------------------")
+            for uq_val in self.nb.ft.fr_table[atr[0]].items():
+                print(f"  ", f"{uq_val[0]}:", " " * (8 - len(uq_val[0])), uq_val[1])
 
 
     def probabilities(self, probabilities):
@@ -27,7 +34,7 @@ class Display:
         print("=============")
         for val, prob in probabilities.items():
             spc = " " * (3 - len(val))
-            print(val, spc, prob)
+            print(val, spc, "{:.4f}".format(prob))
 
 
     def prediction(self, probabilities):
@@ -38,4 +45,4 @@ class Display:
 
         print(f"\nMost probable class: {val}")
         diff = (probabilities["Yes"] - probabilities["No"])
-        print(f"Difference: {diff}")
+        print("Difference: {:.4f}".format(diff))

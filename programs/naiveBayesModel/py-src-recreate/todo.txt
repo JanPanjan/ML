@@ -1,0 +1,3 @@
+--- AUGMENTIRAJ MODEL, DA BO LAHKO SPREJEL VEČ CLASS VREDNOSTI ---
+zdaj lahko dela samo z yes in no, kaj če ni yes in no class vrednosti
+in kaj če jih je več kot 2.
