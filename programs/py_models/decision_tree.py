@@ -110,8 +110,11 @@ class DecisionTree:
 
         # for each unique values of best attribute, get subsets of examples with this value
         for val in self.ft.uq_val_table[best_atr]:
-            # indices of value to access elements of X and Y with val
-            ids = self.ft.val_id_table[val]
+            # indexes of value to access elements of X and Y with val
+            # first get all indexes, then take only the rows from subset
+            all_ids = self.ft.val_id_table[val]
+            cur_ids = [i for i, og_id in enumerate()]
+
             sub_X = [X[i] for i in ids]     # get rows from X (2D list)
             sub_Y = [Y[i] for i in ids]     # get elements from Y (1D list)
 
