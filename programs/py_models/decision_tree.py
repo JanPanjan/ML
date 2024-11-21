@@ -86,7 +86,7 @@ class DecisionTree:
         Function will build a decision tree recursively. 
         It returns the root of tree. 
         """
-        # ----------------------- edge case 1: ---------------------------
+        # ----------------------- base case 1: ---------------------------
         # if all examples have same class (purity), make a leaf node with
         # class value
         if len(set(Y)) == 1:
@@ -94,7 +94,7 @@ class DecisionTree:
             leaf.is_leaf = True
             return leaf
         
-        # ----------------------- edge case 2: -----------------------------
+        # ----------------------- base case 2: -----------------------------
         # if Y is not pure and we used all of the features, we need to stop
         # recursion somehow - handling imperfect separation with a "best guess"
         if not feature_names:
