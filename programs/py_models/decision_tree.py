@@ -49,19 +49,21 @@ class DecisionTree:
         self.feature_col_names = col_names[:-1]
         # dobi frekvence
         self.ft = FrequencyTable(f_mat, self.feature_col_names, c_vec)
-        # naredi tabelo infogain atributov
-        self.__make_info_table()
         # izgradi drevo
         self.root = self.__build_tree(X, Y, self.feature_col_names)
 
 
-    def predict(self, case: list):
+    def predict(self, case: list) -> str:
         """ 
         Predicts class value for a given case by traversing the tree. 
+        Returns the best guess for a class value.
         e.g. case ["Sunny", "Hot", "Normal", "False"] returns "Yes" or "No"
         """
-        # start at root and continue downwards until we find a leaf
         cur = self.root
+        cur_cls = self.ft.c_vec
+        guess = ""
+
+        # start at root and continue downwards until we find a leaf
         while not cur.is_leaf:
             # get current node's attribute (key)
             atr = cur.key
@@ -76,15 +78,16 @@ class DecisionTree:
             # move to next node based on this value
             if val in cur.next:
                 cur = cur.next[val]
-            # handle unseen values
+            # handle "weird" values with bypassing
             else:
-                return self.__get_majority_class()
+                continue
+        
+        return cur.key
 
 
-    def __build_tree(self, X:list, Y:list, feature_names:list) -> Node:
+    def __build_tree(self, X:list, Y:list, feature_names:list, index_map=None) -> Node:
         """ 
-        Function will build a decision tree recursively. 
-        It returns the root of tree. 
+        Function will build a decision tree recursively. Returns a Node object.
         """
         # ----------------------- base case 1: ---------------------------
         # if all examples have same class (purity), make a leaf node with
@@ -103,25 +106,39 @@ class DecisionTree:
             leaf.is_leaf = True
             return leaf
 
-        # ----------------------- build tree ------------------------------
+        # ----------------------- build tree -----------------------------------
+        # make a table with information gain values only from remaining features
+        self.info_table = self.__make_info_table(feature_names)
+
         # find best attribute to split the tree on
         best_atr = self.__get_best_atr()
         root = Node(best_atr)
 
+        # get range of rows valid to use for tree (only on first call)
+        # needed, since every recursive call we pass a smaller subset of X
+        if index_map is None:
+            index_map = list(range(len(X)))
+
         # for each unique values of best attribute, get subsets of examples with this value
         for val in self.ft.uq_val_table[best_atr]:
             # indexes of value to access elements of X and Y with val
-            # first get all indexes, then take only the rows from subset
-            all_ids = self.ft.val_id_table[val]
-            cur_ids = [i for i, og_id in enumerate()]
+            # get only ids passed in index_map, to avoid out of bounds error while subsetting
+            value_ids = self.ft.val_id_table[val]
+            valid_ids = [i for i, id in enumerate(index_map)
+                         if id in value_ids]
+            
+            if not valid_ids:
+                continue
 
-            sub_X = [X[i] for i in ids]     # get rows from X (2D list)
-            sub_Y = [Y[i] for i in ids]     # get elements from Y (1D list)
+            sub_X = [X[i] for i in valid_ids]     # get rows from X (2D list)
+            sub_Y = [Y[i] for i in valid_ids]     # get elements from Y (1D list)
 
+            # make a new index_map
+            sub_index_map = [index_map[i] for i in valid_ids]
             # remove current attribute from feature names (for recursion)
-            sub_features = [f for f in feature_names if f is not best_atr]
+            sub_features = [f for f in feature_names if f != best_atr]
             # recursively build the tree
-            root.next[val] = self.__build_tree(sub_X, sub_Y, sub_features)
+            root.next[val] = self.__build_tree(sub_X, sub_Y, sub_features, sub_index_map)
         
         return root
 
@@ -180,8 +197,6 @@ class DecisionTree:
         return self.__ibs() - self.__ias(attribute)
 
 
-    def __make_info_table(self):
+    def __make_info_table(self, feature_names) -> dict:
         """ makes a table that holds attribute information gain. """
-        self.info_table = {atr: self.__info_gain(atr) for atr in self.feature_col_names}
-        return
-
+        return {atr: self.__info_gain(atr) for atr in feature_names}
