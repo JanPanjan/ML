@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import util
 from naive_bayes import NaiveBayes
+from decision_tree import *
 
 
 def main():
@@ -22,9 +23,15 @@ def main():
 
     # predicta class value glede na neko X vrstico
     case = ["Sunny", "Hot", "Normal", "False"]
-    prediction = nb.predict(case)
-    nb.display.probabilities(prediction)
-    nb.display.prediction(prediction)
+    prediction_nb = nb.predict(case)
+    # nb.display.probabilities(prediction_nb)
+    # nb.display.prediction(prediction_nb)
+
+    # ---- decision treeeee ----
+    dt = DecisionTree()
+    dt.train(X, Y, col_names)
+    prediction_dt = dt.predict(case)
+    print(prediction_dt)
 
 if __name__ == "__main__":
     main()
