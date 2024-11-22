@@ -1,3 +1,8 @@
 --- AUGMENTIRAJ MODEL, DA BO LAHKO SPREJEL VEČ CLASS VREDNOSTI ---
 zdaj lahko dela samo z yes in no, kaj če ni yes in no class vrednosti
 in kaj če jih je več kot 2.
+
+--- PREVERI IZRAČUNE FREKVENČNIH TABEL ---
+Mislim, da se vrednosti narobe izračunajo, saj se v odločitvenem drevesu v
+root vključi "Windy" atribut (morda pa imam samo manj podatkov, kot jih je
+v powerpointu iz vaj)

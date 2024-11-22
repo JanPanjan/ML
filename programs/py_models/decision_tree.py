@@ -60,8 +60,6 @@ class DecisionTree:
         e.g. case ["Sunny", "Hot", "Normal", "False"] returns "Yes" or "No"
         """
         cur = self.root
-        cur_cls = self.ft.c_vec
-        guess = ""
 
         # start at root and continue downwards until we find a leaf
         while not cur.is_leaf:
@@ -78,7 +76,7 @@ class DecisionTree:
             # move to next node based on this value
             if val in cur.next:
                 cur = cur.next[val]
-            # handle "weird" values with bypassing
+            # handle ~unknown~ values with bypassing
             else:
                 continue
         

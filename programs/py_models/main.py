@@ -18,20 +18,20 @@ def main():
     # predelamo podatke z modelom
     nb = NaiveBayes()
     nb.train(X, Y, col_names)
-    # nb.display.table()
-    # nb.display.fr_table()
+    nb.display.table()
+    nb.display.fr_table()
 
     # predicta class value glede na neko X vrstico
     case = ["Sunny", "Hot", "Normal", "False"]
     prediction_nb = nb.predict(case)
-    # nb.display.probabilities(prediction_nb)
-    # nb.display.prediction(prediction_nb)
+    nb.display.probabilities(prediction_nb)
+    nb.display.prediction(prediction_nb)
 
     # ---- decision treeeee ----
     dt = DecisionTree()
     dt.train(X, Y, col_names)
     prediction_dt = dt.predict(case)
-    print(prediction_dt)
+    print("\n", prediction_dt)
 
 if __name__ == "__main__":
     main()
