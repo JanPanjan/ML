@@ -140,6 +140,7 @@ class DecisionTree:
         
         return root
 
+
     def __get_majority_class(Y:list) -> str:
         """ 
         For each value in set(Y), Y.count is called. 
@@ -151,7 +152,12 @@ class DecisionTree:
     def __get_best_atr(self) -> str:
         """ returns the attribute with the biggest information gain. """
         return max(self.info_table, key=self.info_table.get)
-        
+
+
+    def __make_info_table(self, feature_names) -> dict:
+        """ makes a table that holds attribute information gain. """
+        return {atr: self.__info_gain(atr) for atr in feature_names}
+
 
     def __entropy(self, probabilites: dict) -> float:
         """ calculates entropy for attribute value. calculated as:
@@ -194,7 +200,3 @@ class DecisionTree:
         """ calculates information gain. calculated from ibs and ias. """
         return self.__ibs() - self.__ias(attribute)
 
-
-    def __make_info_table(self, feature_names) -> dict:
-        """ makes a table that holds attribute information gain. """
-        return {atr: self.__info_gain(atr) for atr in feature_names}

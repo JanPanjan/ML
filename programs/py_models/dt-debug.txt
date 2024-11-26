@@ -1,0 +1,8 @@
+info table
+best attribute
+index
+valid_ids
+sub X
+sub Y
+sub index map
+sub features
