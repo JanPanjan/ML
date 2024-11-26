@@ -28,6 +28,7 @@ class FrequencyTable:
                 self.table[atr][uq_val] = {}
                 self.fr_table[atr][uq_val] = {}
 
+
         # najde indekse vseh unikatnih vrednosti v feature matriki
         for id, vals in enumerate(self.uq_val_table.values()):
             for uq_val in vals:
@@ -71,7 +72,7 @@ class FrequencyTable:
     smoothajo različno glede na atribute, je funckionalnost razdeljena na
     __adjust_feature, ki smootha vrednosti feature atributov ter 
     __adjust_class, ki smootha vrednosti class atributa """
-    def __adjust_feature(self, table: dict, alpha=1) -> dict:
+    def __adjust_feature(self, table:dict, alpha:float) -> dict:
         """ 
         Smooth feature values probabilities.
 
@@ -80,6 +81,9 @@ class FrequencyTable:
         @param alpha: smoothing scalar. default 1.
         @returns: dict with adjusted values. 
         """
+        if not alpha:
+            alpha = 1
+
         count_yes = self.c_vec.count("Yes")
         count_no = self.c_vec.count("No")
         return {
@@ -87,7 +91,7 @@ class FrequencyTable:
             "No": ((alpha + table["Yes"]) / (count_no + alpha))
         }
 
-    def __adjust_class(self, table: dict, alpha=1) -> dict:
+    def __adjust_class(self, table:dict, alpha:float) -> dict:
         """ 
         Smooth class values probabilities.
 
@@ -96,6 +100,9 @@ class FrequencyTable:
         @param alpha: smoothing scalar. default 1.
         @returns: dict with adjusted values. 
         """
+        if not alpha:
+            alpha = 1
+
         c_len = len(self.c_vec)
         return {
             "Yes": ((alpha + table["Yes"]) / (c_len + 2*alpha)),

@@ -43,7 +43,7 @@ class DecisionTree:
     def train(self, X:list, Y:list, col_names:list) -> None:
         """ Train v sklopu decision tree razumem kot ustvari decision tree
         glede na information gain od podatkov. """
-        f_mat = array(X).T
+        f_mat = list(array(X).T)
         c_vec = Y
         # odstrani class col name
         self.feature_col_names = col_names[:-1]

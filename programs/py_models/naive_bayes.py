@@ -17,7 +17,7 @@ class NaiveBayes:
         @param col_names: 1D list od strings - names of attributes (right order is neccessary)
         @returns none
         """
-        f_mat = array(X).T
+        f_mat = list(array(X).T)
         c_vec = Y
         self.feature_col_names = col_names[:-1]
         self.ft = FrequencyTable(f_mat, self.feature_col_names, c_vec)
@@ -55,11 +55,3 @@ class NaiveBayes:
 
         self.probabilities = {"Yes": self.p_yes, "No": self.p_no}
         return self.probabilities
-
-    
-    def __get_likelihoods(self, case) -> dict:
-        pass
-
-
-    def __get_probability(self) -> dict:
-        pass
