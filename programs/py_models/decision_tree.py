@@ -172,12 +172,16 @@ class DecisionTree:
 
 
     def __ibs(self) -> float:
-        """ calculates information before split. calculated for class attribute.  """
+        """
+        calculates information before split. calculated for class attribute.
+        """
         return self.__entropy(self.ft.cls_table)
 
 
     def __ias(self, attribute: str) -> float:
-        """ calculates information after split. calculated for given feature attribute.  """
+        """ 
+        calculates information after split. calculated for given feature attribute. 
+        """
         info = 0
         n_rows = len(self.ft.c_vec)
 

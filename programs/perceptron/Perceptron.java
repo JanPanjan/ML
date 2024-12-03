@@ -1,7 +1,6 @@
 import java.util.Random;
 
-// To je naš model, ki bo ugibal in se učil katere točke
-// so prave. Learning rate odloča koliko bo thread sleep.
+// To je naš model, ki bo ugibal in se učil katere točke so prave.
 public class Perceptron {
 	private float[] weights;
 	private float bias;
@@ -15,7 +14,6 @@ public class Perceptron {
 		for (int i = 0; i < inputSize; i++) {
 			this.weights[i] = rand.nextFloat(-1, 1);
 		}
-
 		this.bias = rand.nextFloat(-1, 1);
 	}
 
@@ -31,7 +29,6 @@ public class Perceptron {
 		for (int i = 0; i < this.weights.length; i++) {
 			this.weights[i] += input[i] * error * this.learningRate;
 		}
-
 		this.bias += 1 * error * this.learningRate;
 	}
 
@@ -41,7 +38,6 @@ public class Perceptron {
 		for (int i = 0; i < input.length; i++) {
 			sum += input[i] * this.weights[i];
 		}
-
 		sum += 1 * this.bias;
 		return sum;
 	}
@@ -50,7 +46,6 @@ public class Perceptron {
 		if (sum >= 0) {
 			return 1;
 		}
-
 		return 0;
 	}
 }
