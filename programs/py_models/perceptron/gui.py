@@ -11,11 +11,17 @@ class Gui:
         self.root = tk.Tk()
         self.root.geometry(f"{self.__FRAME_WIDTH}x{self.__FRAME_HEIGHT}")
 
+        # ustvari canvas
+        self.c = tk.Canvas(height=self.__FRAME_HEIGHT, width=self.__FRAME_WIDTH, bg="white")
+        self.c.pack()
+
+        return
+
     def paint(self) -> None:
         """
         Ustvari in prikaže display zapolnjen z drawable objekti.
         """
-        self.c = tk.Canvas(self.root, height=self.__FRAME_HEIGHT, width=self.__FRAME_WIDTH, bg="white")
-
         for d in self.__drawables:
-            d.draw(self.root, self.c, self.__FRAME_WIDTH, self.__FRAME_HEIGHT)
+            d.draw(self.c, self.__FRAME_WIDTH, self.__FRAME_HEIGHT)
+
+        return

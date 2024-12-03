@@ -3,69 +3,65 @@ import random as rand
 
 class Point:
     def __init__(self) -> None:
+        """
+        Vsaka točka ima neki x in y koordinati ter label, ki je
+        določen glede na nek pogoj (v našem primeru linearna funkcija).
+        y = kx je x, ko k = 1. x večji od y, pomeni, da je k > 1, zato
+        1 = valid  in 0 = not valid.
+        """
         self.__x = rand.random();
         self.__y = rand.random();
-    
-        # točki doda label glede na njuni koordinati
-        # y = kx je linearna funckija oz. premica, ko k = 1
-        # x večji od y, pomeni, da je k > 1
-        # 1: valid
-        # 0: not valid
-        if self.__x > self.__y:
-            self.__label = 1
-        else:
-            self.__label = 0
+        self.__label = 1 if self.__x > self.__y else 0
 
-        # model mora uganiti, katere točke so v redu in katere ne
-        # na začetku ni uganil še nobedene točke
+        """ 
+        Model mora uganiti, katere točke so v redu in katere ne
+        na začetku ni uganil še nobedene točke, oziroma, prilagaja
+        svoje parametre (error), dokler ne najde ravnovesja.
+        """
         self.__guessed = False
-
+    
     @property
     def x(self) -> float:
         return self.__x
-
-    @x.setter
-    def x(self, val: float) -> None:
-        self.__x = val
     
     @property
     def y(self) -> float:
         return self.__y
     
-    @y.setter
-    def y(self, val: float) -> None:
-        self.__y = val
-
+    @property
+    def label(self) -> int:
+        return self.__label
+    
+    @label.setter
+    def label(self, val:int) -> None:
+        self.__label = val
+    
     @property
     def guessed(self) -> bool:
-        return self.guessed
+        return self.__guessed
     
     @guessed.setter
-    def guessed(self, val: bool) -> None:
+    def guessed(self, val:bool) -> None:
         self.__guessed = val
     
-    def draw(self, root, canvas, frame_width: int, frame_height: int) -> None:
+    
+    def draw(self, canvas, frame_width: int, frame_height: int) -> None:
         """
         Izriše točko na canvas in ji dodeli barvo in fill glede na 
         label in guess modela.
         """
+        # scale coordinates to canvas size
         x = int(self.__x * frame_width)
-        y = int(self.__x * frame_height)
-        pw = 12
+        y = int(self.__y * frame_height)
 
-        # !!!
-        # ali lahko naredim nek interface v pythonu, da passam samo te vrednosti, ki se
-        # spreminjajo (pw, fill)? wrapper? can I? to bi bilo hudo.
-        # !!!
-        if self.__label == 1:
-            canvas.create_oval(root, x-pw, y-pw, x+pw, y+pw, outline="black", fill="white", width=1) # width=12?
-        else:
-            canvas.create_oval(root, x-pw, y-pw, x+pw, y+pw, outline="black", fill="black", width=1) # width=12?
-        
-        pw = 6
+        # set color based on label and whether it was guessed
+        color = "red" if self.__label == 0 else "green"
 
-        if self.__guessed:
-            canvas.create_oval(root, x-pw, y-pw, x+pw, y+pw, outline="black", fill="green", width=1)
-        else:
-            canvas.create_oval(root, x-pw, y-pw, x+pw, y+pw, outline="black", fill="red", width=1)
+        if not self.__guessed:
+            color = "gray"
 
+        # draw the point
+        r = 4  # radius
+        canvas.create_oval(x - r, y - r, x + r, y + r, fill=color)
+
+        return

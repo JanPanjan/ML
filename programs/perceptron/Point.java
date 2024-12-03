@@ -60,6 +60,7 @@ public class Point implements Drawable {
         }
 
         g2d.setColor(Color.red);
+
         if (guessed){
             g2d.setColor(Color.green);
         }else {
