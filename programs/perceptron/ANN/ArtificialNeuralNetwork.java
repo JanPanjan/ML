@@ -13,7 +13,7 @@ public class ArtificialNeuralNetwork {
         int sizeOfLayerBefore = inputSize;
 
         // wtf to je tok smart
-        for (Layer layer : layers) {
+        for (Layer layer : this.layers) {
             sizeOfLayerBefore = layer.initWeights(sizeOfLayerBefore);
         }
     }
@@ -33,5 +33,25 @@ public class ArtificialNeuralNetwork {
 
         // baje vrne dvojni array [[...]]
         return inputToNextLayer.transpose().getValues()[0];
+    }
+
+    /**
+     * 
+     * @param input 
+     * @param targets pravilne vrednosti
+     */
+    public void fitOne(float[] input, float[] targets) {
+        // naredi napoved glede na input
+        float[] predictions = predictOne(input);
+
+        Matrix predictionMatrix = new Matrix(predictions);
+        Matrix targetsnMatrix = new Matrix(targets);
+
+        // Od targets ošteje predictions, zračuna končni error
+        Matrix errors = Matrix.subtractMatrices(targetsnMatrix, predictionMatrix).transpose();
+
+        for (int i = layers.length - 1; i >= 0; i--) {
+            errors = layers[i].backPropagate(errors, this.learningRate);
+        }
     }
 }

@@ -1,7 +1,7 @@
 import point as p
 from gui import Gui
 from perceptron import Perceptron
-import time
+
 
 def generate_data(num_of_pts: int) -> list:
     """
@@ -48,5 +48,6 @@ def main() -> None:
 
     return
 
+# slow as hell
 if __name__ == '__main__':
     main()

@@ -26,8 +26,7 @@ class Perceptron:
         Predicta ali je point v redu ali ne glede na activation function.
         """
         sum = self.weighted_sum(input)
-        # return self.activation_fun(sum)
-        return 1 if sum >= 0 else 0
+        return self.activation_fun(sum)
 
     def weighted_sum(self, input: list) -> float:
         """
@@ -42,7 +41,7 @@ class Perceptron:
         sum += 1 * self.__bias
         return sum
 
-    def activation_fun(sum: float) -> float:
+    def activation_fun(self, sum: float) -> float:
         """
         To je logika našega modela. Glede na to funkcijo klasificira podane
         podatke. Uporabljena je preprosta sign funkcija, ki vrne 1, če je

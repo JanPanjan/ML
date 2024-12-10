@@ -15,7 +15,14 @@ public class Main2 {
             new Layer(1, ActivationFunction.sigmoid)
         });
 
-        test(ann);
+		for (Point p : data) {
+			predictPoints(ann);
+
+			float[] inputs = { p.getX(), p.getY() };
+			float[] targets = { p.getLabel() };
+
+			ann.fitOne(inputs, targets);
+		}
 	}
 
 	// Metoda ustvari #numOfPts točk. To je to.
@@ -29,7 +36,7 @@ public class Main2 {
 		return pts;
 	}
 
-	public static void test(ArtificialNeuralNetwork model) {
+	public static void predictPoints(ArtificialNeuralNetwork model) {
 		for (Point p : data) {
 			float[] input = { p.getX(), p.getY() };
             // baje vrne array samo z eno številko

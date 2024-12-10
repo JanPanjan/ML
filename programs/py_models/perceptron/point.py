@@ -58,10 +58,11 @@ class Point:
         color = "red" if self.__label == 0 else "green"
 
         if not self.__guessed:
-            color = "gray"
+            color = "white"
 
         # draw the point
         r = 4  # radius
-        canvas.create_oval(x - r, y - r, x + r, y + r, fill=color)
+        # canvas.create_oval(x - r, y - r, x + r, y + r, outline="black", fill=color, width=1)
+        canvas.create_rectangle(x - r, y - r, x + r, y + r, outline="black", fill=color, width=1)
 
         return

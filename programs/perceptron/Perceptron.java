@@ -22,6 +22,11 @@ public class Perceptron {
 		return stepActivationFun(sum);
 	}
 
+	/**
+	 * Funckija uči model, kaj so pravilne rešitve, tako da se weights an bias posodabljajo
+	 * @param input
+	 * @param correct
+	 */
 	public void fitOne(float[] input, float correct) {
 		float guess = predictOne(input);
 		float error = correct - guess;
