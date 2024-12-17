@@ -1,4 +1,4 @@
-package ANN;
+package perceptron.src.ann;
 
 import java.util.function.Function;
 
@@ -10,9 +10,7 @@ public class Matrix {
      * Enforces consistent dimensionality.
      * @param values 2D array of floats representing the matrix values.
      */
-    public Matrix(float[] values1d) {
-        float[][] values = { values1d };
-
+    public Matrix(float[][] values) {
         if (values == null) {
             throw new IllegalArgumentException("Enter values to create a Matrix");
         }
@@ -32,8 +30,8 @@ public class Matrix {
 
         this.values = deepCopy(values);
     }
-
-    public Matrix(float[][] values) {
+    public Matrix(float[] values1D) {
+        float[][] values = {values1D};
         if (values == null) {
             throw new IllegalArgumentException("Enter values to create a Matrix");
         }
@@ -333,4 +331,4 @@ public class Matrix {
         }
         return new Matrix(scaledValues);
     }
-} 
+}

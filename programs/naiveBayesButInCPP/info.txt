@@ -1,1 +1,0 @@
-https://medium.com/analytics-vidhya/gaussian-naive-bayes-classifier-in-c-846e9a22aefc 

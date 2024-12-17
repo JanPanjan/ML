@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Main3",
+            "request": "launch",
+            "mainClass": "perceptron.src.Main3",
+            "projectName": "ML_c2067b15"
+        },
+        {
+            "type": "java",
             "name": "Main2",
             "request": "launch",
             "mainClass": "Main2",
